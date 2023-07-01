@@ -46,9 +46,12 @@ public class Vertragspartner {
 
 
     @Override
-    //TODO: Add propertys
     public String toString() {
-        return "vorname: " + getVorname() + " Nachname: " + getNachname() + " Adresse: " + getAdresse();
+        String text = vorname + " " + nachname;
+        text += "\n\t\tAusweisNr: " + ausweisNr;
+        text += "\n\t\tAdresse: " + adresse;
+        text += "\n";
+        return text;
     }
 
 }

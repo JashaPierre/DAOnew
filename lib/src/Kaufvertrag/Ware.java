@@ -6,8 +6,8 @@ public class Ware {
     private String bezeichnung;
     private String beschreibung;
     private double preis;
-    private List<String> besonderheiten;
-    private List<String> maengel;
+    private List<String> besonderheitenListe;
+    private List<String> maengelListe;
 
     public Ware(String bezeichnung, double preis) {
         this.bezeichnung = bezeichnung;
@@ -39,16 +39,21 @@ public class Ware {
     }
 
     public List<String> getBesonderheiten() {
-        return besonderheiten;
+        return besonderheitenListe;
     }
 
     public List<String> getMaengel() {
-        return maengel;
+        return maengelListe;
     }
 
     @Override
     public String toString() {
-        //TODO: add both PropertyLists
-        return "Bezeichnung: " + getBezeichnung() + "Beschreibung: " + getBeschreibung();
+        String text = "\n\t\tBezeichnung: " + bezeichnung;
+        text += "\n\t\tBeschreibung: " + beschreibung;
+        text += "\n\t\tPreis: " + preis;
+        text += "\n\t\tBesonderheiten: " + besonderheitenListe;
+        text += "\n\t\tMängel: " + maengelListe;
+        text += "\n";
+        return text;
     }
 }
