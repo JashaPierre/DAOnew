@@ -1,11 +1,13 @@
 package Kaufvertrag;
 
-public class Vertragspartner {
+import Kaufvertrag.Interfaces.IAdresse;
+import Kaufvertrag.Interfaces.IVertragspartner;
+
+public class Vertragspartner implements IVertragspartner {
     private String vorname;
     private String nachname;
     private String ausweisNr;
-    private Adresse adresse;
-
+    private IAdresse adresse;
 
     public Vertragspartner(String vorname, String nachname) {
         this.vorname = vorname;
@@ -27,20 +29,20 @@ public class Vertragspartner {
     public void setNachname(String nachname) {
         this.nachname = nachname;
     }
-
+    @Override
     public String getAusweisNr() {
         return ausweisNr;
     }
-
+    @Override
     public void setAusweisNr(String ausweisNr) {
         this.ausweisNr = ausweisNr;
     }
-
-    public Adresse getAdresse() {
+    @Override
+    public IAdresse getAdresse() {
         return adresse;
     }
-
-    public void setAdresse(Adresse adresse) {
+    @Override
+    public void setAdresse(IAdresse adresse) {
         this.adresse = adresse;
     }
 

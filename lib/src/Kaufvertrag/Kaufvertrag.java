@@ -1,50 +1,61 @@
 package Kaufvertrag;
 
-public class Kaufvertrag {
-    private Vertragspartner verkaeufer;
-    private Vertragspartner kaeufer;
-    private Ware ware;
+import Kaufvertrag.Interfaces.IKaufvertrag;
+import Kaufvertrag.Interfaces.IVertragspartner;
+import Kaufvertrag.Interfaces.IWare;
+
+public class Kaufvertrag implements IKaufvertrag {
+    private IVertragspartner verkaeufer;
+    private IVertragspartner kaeufer;
+    private IWare ware;
     private String zahlungsModalitaet;
 
-    public Kaufvertrag(Vertragspartner vertragspartner, Vertragspartner kaeufer, Ware ware) {
+    public Kaufvertrag(IVertragspartner vertragspartner, IVertragspartner kaeufer, Ware ware) {
         this.verkaeufer = vertragspartner;
         this.kaeufer = kaeufer;
         this.ware = ware;
     }
 
-    public Vertragspartner getVerkaeufer() {
+    @Override
+    public IVertragspartner getVerkaeufer() {
         return verkaeufer;
     }
 
-    public void setVerkaeufer(Vertragspartner verkaeufer) {
+    @Override
+    public void setVerkaeufer(IVertragspartner verkaeufer) {
         this.verkaeufer = verkaeufer;
     }
 
-    public Vertragspartner getKaeufer() {
+    @Override
+    public IVertragspartner getKaeufer() {
         return kaeufer;
     }
 
-    public void setKaeufer(Vertragspartner kaeufer) {
+    @Override
+    public void setKaeufer(IVertragspartner kaeufer) {
         this.kaeufer = kaeufer;
     }
 
-    public Ware getWare() {
+    @Override
+    public IWare getWare() {
         return ware;
     }
 
-    public void setWare(Ware ware) {
+    @Override
+    public void setWare(IWare ware) {
         this.ware = ware;
     }
 
-    public String getZahlungsModalitaet() {
+    @Override
+    public String getZahlungsModalitaeten() {
         return zahlungsModalitaet;
     }
 
-    public void setZahlungsModalitaet(String zahlungsModalitaet) {
+    @Override
+    public void setZahlungsModalitaeten(String zahlungsModalitaet) {
         this.zahlungsModalitaet = zahlungsModalitaet;
     }
 
-    @Override
     public String toString() {
         String text = "Kaufvertrag: ";
         text += "\n\tVerkäufer: " + verkaeufer;
