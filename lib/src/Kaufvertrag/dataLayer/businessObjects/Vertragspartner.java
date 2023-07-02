@@ -1,7 +1,7 @@
-package Kaufvertrag;
+package Kaufvertrag.dataLayer.businessObjects;
 
-import Kaufvertrag.Interfaces.IAdresse;
-import Kaufvertrag.Interfaces.IVertragspartner;
+import Kaufvertrag.businessObjects.IAdresse;
+import Kaufvertrag.businessObjects.IVertragspartner;
 
 public class Vertragspartner implements IVertragspartner {
     private String vorname;

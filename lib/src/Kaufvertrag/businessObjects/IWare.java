@@ -1,4 +1,4 @@
-package Kaufvertrag.Interfaces;
+package Kaufvertrag.businessObjects;
 
 import java.util.List;
 

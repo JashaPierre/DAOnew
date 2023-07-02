@@ -1,7 +1,7 @@
-package Kaufvertrag.XML;
+package Kaufvertrag.dataLayer.businessObjects.dataAccessObjects.XML;
 
-import Kaufvertrag.Exceptions.DaoException;
-import Kaufvertrag.Interfaces.IDao;
+import Kaufvertrag.exceptions.DaoException;
+import Kaufvertrag.dataLayer.businessObjects.dataAccessObjects.IDao;
 
 import java.util.List;
 

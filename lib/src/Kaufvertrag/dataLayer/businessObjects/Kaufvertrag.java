@@ -1,8 +1,8 @@
-package Kaufvertrag;
+package Kaufvertrag.dataLayer.businessObjects;
 
-import Kaufvertrag.Interfaces.IKaufvertrag;
-import Kaufvertrag.Interfaces.IVertragspartner;
-import Kaufvertrag.Interfaces.IWare;
+import Kaufvertrag.businessObjects.IKaufvertrag;
+import Kaufvertrag.businessObjects.IVertragspartner;
+import Kaufvertrag.businessObjects.IWare;
 
 public class Kaufvertrag implements IKaufvertrag {
     private IVertragspartner verkaeufer;

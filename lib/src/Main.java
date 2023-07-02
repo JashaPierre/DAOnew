@@ -1,7 +1,7 @@
-import Kaufvertrag.Adresse;
-import Kaufvertrag.Kaufvertrag;
-import Kaufvertrag.Vertragspartner;
-import Kaufvertrag.Ware;
+import Kaufvertrag.dataLayer.businessObjects.Adresse;
+import Kaufvertrag.dataLayer.businessObjects.Kaufvertrag;
+import Kaufvertrag.dataLayer.businessObjects.Vertragspartner;
+import Kaufvertrag.dataLayer.businessObjects.Ware;
 
 public class Main {
 

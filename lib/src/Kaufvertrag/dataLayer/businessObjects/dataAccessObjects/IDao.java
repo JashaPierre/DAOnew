@@ -1,6 +1,6 @@
-package Kaufvertrag.Interfaces;
+package Kaufvertrag.dataLayer.businessObjects.dataAccessObjects;
 
-import Kaufvertrag.Exceptions.DaoException;
+import Kaufvertrag.exceptions.DaoException;
 import java.util.List;
 
     public interface IDao<T,K>{

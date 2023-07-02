@@ -1,11 +1,14 @@
-package Kaufvertrag.SQL;
+package Kaufvertrag.dataLayer.businessObjects.dataAccessObjects.XML;
 
-import Kaufvertrag.Exceptions.DaoException;
-import Kaufvertrag.Interfaces.IDao;
+import Kaufvertrag.exceptions.DaoException;
+import Kaufvertrag.dataLayer.businessObjects.dataAccessObjects.IDao;
 
 import java.util.List;
 
-public class VertragspartnerDaoSqlite implements IDao {
+/**
+ * Soll IWare später benutzen.
+ * */
+public class WareDaoXml implements IDao {
     @Override
     public Object creat() {
         return null;
