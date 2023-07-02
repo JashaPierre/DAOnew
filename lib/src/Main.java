@@ -1,7 +1,7 @@
+import Kaufvertrag.Adresse;
 import Kaufvertrag.Kaufvertrag;
 import Kaufvertrag.Vertragspartner;
 import Kaufvertrag.Ware;
-import Kaufvertrag.Adresse;
 
 public class Main {
     public static void main(String[] args) {
