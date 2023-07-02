@@ -14,6 +14,11 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
+
+    <build>
+        <sourceDirectory>lib/src/Kaufvertrag</sourceDirectory>
+    </build>
+
     <dependencies>
         <!-- https://mvnrepository.com/artifact/org.jdom/jdom2 -->
         <dependency>
