@@ -11,8 +11,8 @@ public class DataLayerManager {
     public IDataLayer getDataLayer() {
         return null;
     }
-    
-    String readPersistenceType(){
 
+    String readPersistenceType(){
+        return null;
     }
 }
