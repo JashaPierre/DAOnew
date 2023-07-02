@@ -1,8 +1,8 @@
-package Kaufvertrag.dataLayer.businessObjects;
+package dataLayer.businessObjects;
 
-import Kaufvertrag.businessObjects.IKaufvertrag;
-import Kaufvertrag.businessObjects.IVertragspartner;
-import Kaufvertrag.businessObjects.IWare;
+import businessObjects.IKaufvertrag;
+import businessObjects.IVertragspartner;
+import businessObjects.IWare;
 
 public class Kaufvertrag implements IKaufvertrag {
     private IVertragspartner verkaeufer;
@@ -10,7 +10,7 @@ public class Kaufvertrag implements IKaufvertrag {
     private IWare ware;
     private String zahlungsModalitaet;
 
-    public Kaufvertrag(IVertragspartner vertragspartner, IVertragspartner kaeufer, Ware ware) {
+    public Kaufvertrag(IVertragspartner vertragspartner, IVertragspartner kaeufer, IWare ware) {
         this.verkaeufer = vertragspartner;
         this.kaeufer = kaeufer;
         this.ware = ware;

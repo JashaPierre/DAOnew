@@ -1,4 +1,4 @@
-package Kaufvertrag.businessObjects;
+package businessObjects;
 
 public interface IVertragspartner {
    String getAusweisNr();

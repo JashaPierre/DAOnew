@@ -1,4 +1,4 @@
-package Kaufvertrag.businessObjects;
+package businessObjects;
 public interface IKaufvertrag {
     IVertragspartner getVerkaeufer();
     void setVerkaeufer(IVertragspartner verkaeufer);

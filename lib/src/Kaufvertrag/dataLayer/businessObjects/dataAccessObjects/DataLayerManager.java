@@ -1,4 +1,4 @@
-package Kaufvertrag.dataLayer.businessObjects.dataAccessObjects;
+package dataLayer.businessObjects.dataAccessObjects;
 
 public class DataLayerManager {
     private DataLayerManager instance;

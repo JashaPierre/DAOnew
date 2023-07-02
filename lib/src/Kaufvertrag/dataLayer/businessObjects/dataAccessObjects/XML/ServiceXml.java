@@ -1,4 +1,4 @@
-package Kaufvertrag.dataLayer.businessObjects.dataAccessObjects.XML;
+package dataLayer.businessObjects.dataAccessObjects.XML;
 
 public class ServiceXml {
 

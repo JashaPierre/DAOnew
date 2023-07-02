@@ -1,7 +1,7 @@
-package Kaufvertrag.dataLayer.businessObjects.dataAccessObjects;
+package dataLayer.businessObjects.dataAccessObjects;
 
-import Kaufvertrag.businessObjects.IVertragspartner;
-import Kaufvertrag.businessObjects.IWare;
+import businessObjects.IVertragspartner;
+import businessObjects.IWare;
 
 public interface IDataLayer {
     IDao<IVertragspartner,String> getDaoVertragspartner();

@@ -1,7 +1,7 @@
-package Kaufvertrag.dataLayer.businessObjects.dataAccessObjects.sqlite;
+package dataLayer.businessObjects.dataAccessObjects.sqlite;
 
-import Kaufvertrag.exceptions.DaoException;
-import Kaufvertrag.dataLayer.businessObjects.dataAccessObjects.IDao;
+import exceptions.DaoException;
+import dataLayer.businessObjects.dataAccessObjects.IDao;
 
 import java.util.List;
 

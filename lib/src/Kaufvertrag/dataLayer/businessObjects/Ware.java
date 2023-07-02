@@ -1,6 +1,6 @@
-package Kaufvertrag.dataLayer.businessObjects;
+package dataLayer.businessObjects;
 
-import Kaufvertrag.businessObjects.IWare;
+import businessObjects.IWare;
 
 import java.util.List;
 

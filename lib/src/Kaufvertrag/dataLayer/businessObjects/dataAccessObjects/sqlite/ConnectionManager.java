@@ -1,4 +1,4 @@
-package Kaufvertrag.dataLayer.businessObjects.dataAccessObjects.sqlite;
+package dataLayer.businessObjects.dataAccessObjects.sqlite;
 
 import java.sql.*;
 

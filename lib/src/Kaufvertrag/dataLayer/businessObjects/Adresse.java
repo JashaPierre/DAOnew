@@ -1,6 +1,6 @@
-package Kaufvertrag.dataLayer.businessObjects;
+package dataLayer.businessObjects;
 
-import Kaufvertrag.businessObjects.IAdresse;
+import businessObjects.IAdresse;
 
 //TODO: find out if Adress implements, extends or smth like that with Adresse (composition)
 public class Adresse implements IAdresse {

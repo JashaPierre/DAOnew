@@ -1,9 +1,9 @@
-package Kaufvertrag.dataLayer.businessObjects.dataAccessObjects.sqlite;
+package dataLayer.businessObjects.dataAccessObjects.sqlite;
 
-import Kaufvertrag.dataLayer.businessObjects.dataAccessObjects.IDao;
-import Kaufvertrag.dataLayer.businessObjects.dataAccessObjects.IDataLayer;
-import Kaufvertrag.businessObjects.IVertragspartner;
-import Kaufvertrag.businessObjects.IWare;
+import dataLayer.businessObjects.dataAccessObjects.IDao;
+import dataLayer.businessObjects.dataAccessObjects.IDataLayer;
+import businessObjects.IVertragspartner;
+import businessObjects.IWare;
 
 public class DataLayerSqlite implements IDataLayer {
 
