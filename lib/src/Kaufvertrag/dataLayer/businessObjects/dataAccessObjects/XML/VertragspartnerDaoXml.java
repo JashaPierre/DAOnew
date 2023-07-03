@@ -1,14 +1,14 @@
 package Kaufvertrag.dataLayer.businessObjects.dataAccessObjects.XML;
-
 import Kaufvertrag.exceptions.DaoException;
 import Kaufvertrag.dataLayer.businessObjects.dataAccessObjects.IDao;
 
+import java.util.Date;
 import java.util.List;
 
 public class VertragspartnerDaoXml implements IDao {
     @Override
     public Object creat() {
-        return null;
+        return new VertragspartnerDaoXml();
     }
 
     @Override
@@ -18,6 +18,7 @@ public class VertragspartnerDaoXml implements IDao {
 
     @Override
     public Object read(Object id) throws DaoException {
+
         return null;
     }
 

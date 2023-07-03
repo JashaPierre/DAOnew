@@ -11,7 +11,7 @@ import java.util.List;
 public class WareDaoXml implements IDao {
     @Override
     public Object creat() {
-        return null;
+       return new WareDaoXml();
     }
 
     @Override
@@ -26,7 +26,7 @@ public class WareDaoXml implements IDao {
 
     @Override
     public List readAll() throws DaoException {
-        return null;
+
     }
 
     @Override

@@ -1,7 +1,11 @@
+package Kaufvertrag;
+
 import Kaufvertrag.dataLayer.businessObjects.Adresse;
 import Kaufvertrag.dataLayer.businessObjects.Kaufvertrag;
 import Kaufvertrag.dataLayer.businessObjects.Vertragspartner;
 import Kaufvertrag.dataLayer.businessObjects.Ware;
+import Kaufvertrag.dataLayer.businessObjects.dataAccessObjects.DataLayerManager;
+
 
 public class Main {
 
@@ -25,7 +29,10 @@ public class Main {
 
         Kaufvertrag kaufvertrag = new Kaufvertrag(kaeufer, verkaeufer, ware);
 
+        DataLayerManager manager = DataLayerManager.getInstance();
+        manager.
+
         //System.out.println(kaufvertrag);
-        System.out.println("Project Path: " + projectPath);
+        //System.out.println("Project Path: " + projectPath);
     }
 }

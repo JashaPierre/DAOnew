@@ -16,7 +16,7 @@
 
 
     <build>
-        <sourceDirectory>lib/src/Kaufvertrag</sourceDirectory>
+        <sourceDirectory>lib/src</sourceDirectory>
     </build>
 
     <dependencies>
