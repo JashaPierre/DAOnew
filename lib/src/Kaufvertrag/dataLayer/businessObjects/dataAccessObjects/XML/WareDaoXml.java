@@ -1,7 +1,7 @@
 package Kaufvertrag.dataLayer.businessObjects.dataAccessObjects.XML;
 
-import Kaufvertrag.exceptions.DaoException;
 import Kaufvertrag.dataLayer.businessObjects.dataAccessObjects.IDao;
+import Kaufvertrag.exceptions.DaoException;
 
 import java.util.List;
 
@@ -26,7 +26,7 @@ public class WareDaoXml implements IDao {
 
     @Override
     public List readAll() throws DaoException {
-
+         return null;
     }
 
     @Override
