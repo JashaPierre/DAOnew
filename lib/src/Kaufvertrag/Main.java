@@ -30,7 +30,6 @@ public class Main {
         Kaufvertrag kaufvertrag = new Kaufvertrag(kaeufer, verkaeufer, ware);
 
         DataLayerManager manager = DataLayerManager.getInstance();
-        manager.
 
         //System.out.println(kaufvertrag);
         //System.out.println("Project Path: " + projectPath);

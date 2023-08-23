@@ -18,7 +18,6 @@ public class VertragspartnerDaoXml implements IDao {
 
     @Override
     public Object read(Object id) throws DaoException {
-
         return null;
     }
 
