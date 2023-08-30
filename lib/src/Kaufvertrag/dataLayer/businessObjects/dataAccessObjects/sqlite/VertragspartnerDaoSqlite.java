@@ -12,7 +12,7 @@ import java.util.Scanner;
 
 public class VertragspartnerDaoSqlite implements IDao {
     @Override
-    public Object creat() {
+    public Object create() {
         String vorname = null;
         String nachname = null;
         Scanner scanner = new Scanner(System.in);

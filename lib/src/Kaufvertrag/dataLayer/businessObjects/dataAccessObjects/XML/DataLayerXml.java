@@ -14,7 +14,8 @@ public class DataLayerXml implements IDataLayer {
 
     @Override
     public IDao<IWare, Long> getDaoWare() {
-        return new WareDaoXml();
+        WareDaoXml wareDaoXml = new WareDaoXml();
+        return wareDaoXml;
     }
 
 }

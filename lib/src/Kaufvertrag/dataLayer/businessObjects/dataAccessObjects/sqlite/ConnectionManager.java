@@ -9,17 +9,17 @@ public class ConnectionManager {
     private boolean classLoaded;
 
     public Connection getNewConnection() {
-        return null;
+        return null; //PLACEHOLDER
     }
 
     public Connection getExistingConnection() {
-        return null;
+        return null; //PLACEHOLDER
     }
 
     public void close(ResultSet resultSet, Statement statement, Connection connection){
-        resultSet = null;
-        statement = null;
-        connection = null;
+        resultSet = null; //PLACEHOLDER
+        statement = null; //PLACEHOLDER
+        connection = null; //PLACEHOLDER
     }
 
 

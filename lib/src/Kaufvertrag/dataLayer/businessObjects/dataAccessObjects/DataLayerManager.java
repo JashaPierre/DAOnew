@@ -1,6 +1,7 @@
 package Kaufvertrag.dataLayer.businessObjects.dataAccessObjects;
 
 import Kaufvertrag.dataLayer.businessObjects.dataAccessObjects.XML.DataLayerXml;
+import Kaufvertrag.dataLayer.businessObjects.dataAccessObjects.sqlite.DataLayerSqlite;
 import Kaufvertrag.exceptions.DaoException;
 import jdk.jshell.spi.ExecutionControl;
 
@@ -13,29 +14,42 @@ public class DataLayerManager {
     private static DataLayerManager instance;
     private String persistenceType;
     private DataLayerManager(){
-        readPersistenceType();
+        persistenceType = readPersistenceType();
     }
 
     public static DataLayerManager getInstance(){
+        //Schritt 1.1
         if(instance == null)
             return instance = new DataLayerManager();
         return instance;
     }
     public IDataLayer getDataLayer() throws DaoException {
-       //return either XML or sqlite datalayer
-        System.out.println("Not implemented!");
-        return null;
+        //
+        switch (readPersistenceType()){
+            case "xml" -> {
+
+                return new DataLayerXml();
+            }
+            case "sqlite" -> {
+                return new DataLayerSqlite();
+            }
+            default -> throw new DaoException("Unrecognized persistence Type.");
+        }
     }
 
     private String readPersistenceType(){
+        //Schritt 1.2
+        System.out.println("Welche Form der Persistierung möchten Sie Nutzen? XML (1) oder Sqlite(2)");
+        String type = "";
         Scanner sc = new Scanner(System.in);
-
-        switch (sc.nextLine()) {
-            case "XML" -> persistenceType = "xml";
-            case "Sqlite" -> persistenceType = "Sqlite";
-            default -> throw new IllegalArgumentException("Ungültige Persistierungsoption: " + sc);
-        };
+        do{
+            switch (sc.nextLine()) {
+                case "1" -> type = "xml";
+                case "2" -> type = "sqlite";
+                default -> System.out.println("Keine gültige Eingabe!");
+            }
+        }while (!type.equals("xml") && !type.equals("sqlite"));
         sc.close();
-        return null;
+        return type;
     }
 }
