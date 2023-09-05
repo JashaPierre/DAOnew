@@ -1,23 +1,20 @@
 package Kaufvertrag.dataLayer.businessObjects.dataAccessObjects.XML;
-import Kaufvertrag.dataLayer.businessObjects.Vertragspartner;
-import Kaufvertrag.exceptions.DaoException;
-import Kaufvertrag.dataLayer.businessObjects.dataAccessObjects.IDao;
 
-import java.io.IOException;
-import java.util.Date;
+import Kaufvertrag.dataLayer.businessObjects.dataAccessObjects.IDao;
+import Kaufvertrag.exceptions.DaoException;
+
 import java.util.List;
 
 public class VertragspartnerDaoXml implements IDao {
 
     @Override
     public Object create() {
-        ServiceXml serviceXml = new ServiceXml(this, "Vertragspartner");
-        return serviceXml;
+        return null; //PLACEHOLDER
     }
 
     @Override
     public void create(Object objectToInsert) throws DaoException {
-
+        //PLACEHOLDER
     }
 
     @Override
@@ -32,12 +29,12 @@ public class VertragspartnerDaoXml implements IDao {
 
     @Override
     public void update(Object objectToUpdate) throws DaoException {
-
+        //PLACEHOLDER
     }
 
     @Override
     public void delete(Object id) throws DaoException {
-
+        //PLACEHOLDER
     }
 
 

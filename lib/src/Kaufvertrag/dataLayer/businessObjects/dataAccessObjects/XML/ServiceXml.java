@@ -3,10 +3,10 @@ package Kaufvertrag.dataLayer.businessObjects.dataAccessObjects.XML;
 import Kaufvertrag.Main;
 import Kaufvertrag.businessObjects.IVertragspartner;
 import Kaufvertrag.businessObjects.IWare;
-import Kaufvertrag.dataLayer.businessObjects.Vertragspartner;
 import Kaufvertrag.dataLayer.businessObjects.dataAccessObjects.IDao;
 import org.jdom2.Document;
 import org.jdom2.Element;
+import org.jdom2.input.SAXBuilder;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 
@@ -14,20 +14,12 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
-import java.util.Objects;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
+ public class ServiceXml {
 
-public class ServiceXml {
-
-    public ServiceXml(IDao idao, String fileName) {
-        try {
-            this.newVertragXML(idao, fileName);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public void newVertragXML(IDao idao, String fileName) throws IOException {
+    public void newVertragXML(IDao<Object,Object> idao, String fileName) throws IOException {
         Document document = new Document();
         Element root = new Element("kaufvertrag");
         document.setRootElement(root);
@@ -50,30 +42,65 @@ public class ServiceXml {
         fileOutputStream.close();
     }
 
-    public void openXML(){
+   /* public void newVertragXML(IDao<Object,Object> idao)  throws IOException{
+        newVertragXML(idao, "");
+    }*/
+
+    public void readXMLFile(File xmlDatei){
+        if(xmlDatei != null){
+            try{
+                SAXBuilder sb = new SAXBuilder();
+                Document xml = sb.build(xmlDatei);
+                Element rootElement =  xml.getRootElement();
+
+            }catch (Exception e){
+                System.err.println("Konnte kein Root Element finden.");
+                e.printStackTrace();
+            }
+//            return null;
+        }
+        else {
+            System.err.println("xmlDatei was null.");
+        }
+//        return null;
+    }
+
+    public File getXMLFile(){
         File directory = new File(Main.PROJECTPATH + "/xmls");
+        StringBuilder filesString = new StringBuilder();
+        Map<File, String> fileOptions = new HashMap<>();
         if(directory.isDirectory()){
             File[] xmlFiles = directory.listFiles(xmlFileNameFilter());
             if(xmlFiles != null) {
                 for(int i = 0; i < xmlFiles.length; i++){
-                   System.out.println(xmlFiles[i].getName() + " (" + i + ")");
+                    File file = xmlFiles[i];
+                    String option = Integer.toString(i);
+                    fileOptions.put(file, option);
+                    filesString.append(xmlFiles[i].getName()).append(" (").append(i).append(") ");
                 }
             }
         }
-        System.out.println();
+        System.out.println("Welche Datei möchten Sie öffnen?");
+        System.out.println(filesString);
         Scanner sc = new Scanner(System.in);
-        do{
-            switch (sc.nextLine()) {
-                case "1" -> {
-
-                };
-                case "2" -> {
-
-                };
-                default -> System.out.println("Keine gültige Eingabe!");
+        File foundFile = null;
+            if(!fileOptions.isEmpty()){
+                do{
+                    for (var entry : fileOptions.entrySet()){
+                        if (entry != null){
+                            if(sc.nextLine().equals(entry.getValue())){
+                                foundFile = entry.getKey();
+                                System.out.println("Selected File: " + foundFile.toString());
+                            }
+                            else {
+                                System.out.println("Ungültige Eingabe");
+                            }
+                        }
+                    }
+                }while (foundFile == null);
             }
-        }while (!type.equals("xml") && !type.equals("sqlite"));
-        sc.close();
+            sc.close();
+        return foundFile;
     }
 
     private FilenameFilter xmlFileNameFilter(){

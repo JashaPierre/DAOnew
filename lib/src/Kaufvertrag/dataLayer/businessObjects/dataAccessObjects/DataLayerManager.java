@@ -1,13 +1,11 @@
 package Kaufvertrag.dataLayer.businessObjects.dataAccessObjects;
 
+import Kaufvertrag.Main;
 import Kaufvertrag.dataLayer.businessObjects.dataAccessObjects.XML.DataLayerXml;
+import Kaufvertrag.dataLayer.businessObjects.dataAccessObjects.XML.ServiceXml;
 import Kaufvertrag.dataLayer.businessObjects.dataAccessObjects.sqlite.DataLayerSqlite;
 import Kaufvertrag.exceptions.DaoException;
-import jdk.jshell.spi.ExecutionControl;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.Scanner;
 
 public class DataLayerManager {
@@ -27,7 +25,7 @@ public class DataLayerManager {
         //
         switch (readPersistenceType()){
             case "xml" -> {
-
+                Main.seviceXML = new ServiceXml();
                 return new DataLayerXml();
             }
             case "sqlite" -> {
