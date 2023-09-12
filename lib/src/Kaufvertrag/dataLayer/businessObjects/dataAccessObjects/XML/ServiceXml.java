@@ -13,13 +13,18 @@ import org.jdom2.output.XMLOutputter;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Scanner;
  public class ServiceXml {
+     private static ServiceXml instance;
+     private ServiceXml(){}
+     public static ServiceXml getInstance(){
+         if(instance == null)
+             return instance = new ServiceXml();
+         return instance;
+     }
 
-    public void newVertragXML(IDao<Object,Object> idao, String fileName) throws IOException {
+    public <T, K>  void newVertragXML(IDao<T,K> iDao, String fileName) {
         Document document = new Document();
         Element root = new Element("kaufvertrag");
         document.setRootElement(root);
@@ -34,12 +39,16 @@ import java.util.Scanner;
         //document.getRootElement().addContent(zahlung);
 
         String datei =  Main.PROJECTPATH + fileName + ".xml";
-        FileOutputStream fileOutputStream = new FileOutputStream(datei);
-        Format format = Format.getCompactFormat();
-        format.setIndent("    ");
-        XMLOutputter xmlOutputter = new XMLOutputter(format);
-        xmlOutputter.output(document, fileOutputStream);
-        fileOutputStream.close();
+        try{
+            FileOutputStream fileOutputStream = new FileOutputStream(datei);
+            Format format = Format.getCompactFormat();
+            format.setIndent("    ");
+            XMLOutputter xmlOutputter = new XMLOutputter(format);
+            xmlOutputter.output(document, fileOutputStream);
+            fileOutputStream.close();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
    /* public void newVertragXML(IDao<Object,Object> idao)  throws IOException{
@@ -82,13 +91,12 @@ import java.util.Scanner;
         }
         System.out.println("Welche Datei möchten Sie öffnen?");
         System.out.println(filesString);
-        Scanner sc = new Scanner(System.in);
         File foundFile = null;
             if(!fileOptions.isEmpty()){
                 do{
                     for (var entry : fileOptions.entrySet()){
                         if (entry != null){
-                            if(sc.nextLine().equals(entry.getValue())){
+                            if(Main.sc.next().equals(entry.getValue())){
                                 foundFile = entry.getKey();
                                 System.out.println("Selected File: " + foundFile.toString());
                             }
@@ -99,7 +107,6 @@ import java.util.Scanner;
                     }
                 }while (foundFile == null);
             }
-            sc.close();
         return foundFile;
     }
 
@@ -175,4 +182,4 @@ import java.util.Scanner;
         return warenElement;
     }
 
-}
+ }
