@@ -95,52 +95,32 @@ public class DataLayerManager {
         return result;
     }
 
- /*   public static <V> Map<AnswerOption<V>, V> ConsoleOptionsAnd(AnswerOption<V>... answers){
-        Map<AnswerOption<V>, V> results = new HashMap<>();
-        StringBuilder antwortString = new StringBuilder();
-        boolean anyAnswertext = false;
-        for (int i = 0;i < answers.length; i++){
-            if(!answers[i].answerText.isEmpty() && !anyAnswertext){
-                antwortString.append(": ");
-                anyAnswertext = true;
-            }
-            antwortString.append(answers[i].answerText);
-            antwortString.append(" (").append("\u001B[32m").append(i).append("\u001B[0m").append(") ");
-        }
+    // AusweisNr T220001293
+    // Irgendwo Straße 33
 
-        V result;
-        if(!antwortString.isEmpty()) {
-            System.out.println("length" + antwortString.length());
-            if(antwortString.length() > 150){
-                String searchString = ": ";
-                int insertionPoint = antwortString.indexOf(searchString) + searchString.length();
-                antwortString.insert(insertionPoint, "\n");
-            }
-            System.out.println(antwortString);
+    public String returnInput(String request, String format, String errorMessage) {
+        if (!request.equals("")) {
+            System.out.println(request);
         }
-        do{
-            String c = Main.sc.next();
-            try{
-                int choice = Integer.parseInt(c);
-                if(answers[choice] != null){
-                    result = answers[choice].executeCallable();
-                    if (result != null)
-                        results.put(answers[choice], result);
-                    break;
-                }
-            }catch (Exception e){
-                if(e instanceof IndexOutOfBoundsException) {
-                    System.out.println("\"" +c+ "\"  als option nicht vorhanden!");
-                }
-                else {
-                    System.out.println("\"" +c+ "\" war Keine gültige Eingabe! " );
-                }
+        String input;
+        boolean useFormat = !format.equals("");
+        do {
+            input = Main.sc.nextLine();
+
+            // Consume any remaining input
+            if (Main.sc.hasNextLine()) {
+                Main.sc.nextLine();
             }
-        }while (true);
-        return results;
+
+            if (input.matches(format) || !useFormat) {
+                return input;
+            } else if (!errorMessage.isEmpty()) {
+                System.out.println(errorMessage);
+            } else {
+                System.out.println("Keine gültige Eingabe");
+            }
+        } while (true);
     }
-*/
-
 
     public class AnswerOption<T> {
         private final ExecutorService es = Executors.newSingleThreadExecutor();
@@ -169,4 +149,57 @@ public class DataLayerManager {
             return result;
         }
     }
+
+
+    /*   public static <V> Map<AnswerOption<V>, V> ConsoleOptionsAnd(AnswerOption<V>... answers){
+           Map<AnswerOption<V>, V> results = new HashMap<>();
+           StringBuilder antwortString = new StringBuilder();
+           boolean anyAnswertext = false;
+           for (int i = 0;i < answers.length; i++){
+               if(!answers[i].answerText.isEmpty() && !anyAnswertext){
+                   antwortString.append(": ");
+                   anyAnswertext = true;
+               }
+               antwortString.append(answers[i].answerText);
+               antwortString.append(" (").append("\u001B[32m").append(i).append("\u001B[0m").append(") ");
+           }
+
+           V result;
+           if(!antwortString.isEmpty()) {
+               System.out.println("length" + antwortString.length());
+               if(antwortString.length() > 150){
+                   String searchString = ": ";
+                   int insertionPoint = antwortString.indexOf(searchString) + searchString.length();
+                   antwortString.insert(insertionPoint, "\n");
+               }
+               System.out.println(antwortString);
+           }
+           do{
+               String c = Main.sc.next();
+               try{
+                   int choice = Integer.parseInt(c);
+                   if(answers[choice] != null){
+                       result = answers[choice].executeCallable();
+                       if (result != null)
+                           results.put(answers[choice], result);
+                       break;
+                   }
+               }catch (Exception e){
+                   if(e instanceof IndexOutOfBoundsException) {
+                       System.out.println("\"" +c+ "\"  als option nicht vorhanden!");
+                   }
+                   else {
+                       System.out.println("\"" +c+ "\" war Keine gültige Eingabe! " );
+                   }
+               }
+           }while (true);
+           return results;
+       }
+    */
+
+
+
 }
+
+
+

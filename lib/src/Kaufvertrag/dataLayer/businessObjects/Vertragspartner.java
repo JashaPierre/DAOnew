@@ -2,6 +2,7 @@ package Kaufvertrag.dataLayer.businessObjects;
 
 import Kaufvertrag.businessObjects.IAdresse;
 import Kaufvertrag.businessObjects.IVertragspartner;
+import Kaufvertrag.dataLayer.businessObjects.dataAccessObjects.DataLayerManager;
 
 public class Vertragspartner implements IVertragspartner {
     private String vorname;
@@ -35,8 +36,18 @@ public class Vertragspartner implements IVertragspartner {
     }
     @Override
     public void setAusweisNr(String ausweisNr) {
-        this.ausweisNr = ausweisNr;
+        if(!ausweisNr.equals(""))
+            this.ausweisNr = ausweisNr;
+        else {
+            DataLayerManager dlm = DataLayerManager.getInstance();
+            this.ausweisNr = dlm.returnInput(
+                    "Geben Sie eine gültige Ausweisnummer ein.",
+                    "[A-Z0-9]{6,12}",
+                    "Kein gültiges format für eine Ausweisnummer."
+            );
+        }
     }
+
     @Override
     public IAdresse getAdresse() {
         return adresse;
