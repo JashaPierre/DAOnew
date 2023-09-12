@@ -3,7 +3,7 @@ package Kaufvertrag.dataLayer.businessObjects.dataAccessObjects.XML;
 import Kaufvertrag.Main;
 import Kaufvertrag.businessObjects.IVertragspartner;
 import Kaufvertrag.businessObjects.IWare;
-import Kaufvertrag.dataLayer.businessObjects.dataAccessObjects.IDao;
+import Kaufvertrag.dataLayer.businessObjects.dataAccessObjects.DataLayerManager;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.input.SAXBuilder;
@@ -13,34 +13,30 @@ import org.jdom2.output.XMLOutputter;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
  public class ServiceXml {
      private static ServiceXml instance;
      private ServiceXml(){}
      public static ServiceXml getInstance(){
-         if(instance == null)
+         if(instance == null){
              return instance = new ServiceXml();
+         }
          return instance;
      }
 
-    public <T, K>  void newVertragXML(IDao<T,K> iDao, String fileName) {
+    public void newGenericXML(String fileName, String rootName, Element... elements) {
         Document document = new Document();
-        Element root = new Element("kaufvertrag");
+        Element root = new Element(rootName);
         document.setRootElement(root);
 
-        //Element zahlung = new Element("zahlung");
-        //zahlung.setText("Privater Barverkauf");
+        for (var element : elements){
+            root.addContent(element);
+        }
 
-        // ____ Muss wo anders hin ________
-        //document.getRootElement().addContent(kaeufer);
-        //document.getRootElement().addContent(verkaeufer);
-        //document.getRootElement().addContent(AddWare);
-        //document.getRootElement().addContent(zahlung);
-
-        String datei =  Main.PROJECTPATH + fileName + ".xml";
         try{
-            FileOutputStream fileOutputStream = new FileOutputStream(datei);
+            File file = new File(folderPath(),fileName + ".xml" );
+            FileOutputStream fileOutputStream = new FileOutputStream(file);
             Format format = Format.getCompactFormat();
             format.setIndent("    ");
             XMLOutputter xmlOutputter = new XMLOutputter(format);
@@ -51,9 +47,40 @@ import java.util.Map;
         }
     }
 
-   /* public void newVertragXML(IDao<Object,Object> idao)  throws IOException{
-        newVertragXML(idao, "");
-    }*/
+    public void newVertragspartnerXML(IVertragspartner vertragspartner, String fileName){
+        Element vornamen = new Element("vornamen");
+        Element nachname = new Element("nachname");
+        Element ausweisNr = new Element("ausweisNr");
+        Element adresse = new Element("adresse");
+
+        vornamen.setText(vertragspartner.getVorname());
+        nachname.setText(vertragspartner.getNachname());
+        ausweisNr.setText(vertragspartner.getAusweisNr());
+
+        Element strasse = new Element("strasse");
+        Element hausNr = new Element("hausNr");
+        Element plz = new Element("plz");
+        Element ort = new Element("ort");
+        if(vertragspartner.getAdresse() != null){
+            strasse.setText(vertragspartner.getAdresse().getStrasse());
+            strasse.setText(vertragspartner.getAdresse().getHausNr());
+            strasse.setText(vertragspartner.getAdresse().getOrt());
+            strasse.setText(vertragspartner.getAdresse().getPlz());
+        }
+
+        adresse.addContent(strasse);
+        adresse.addContent(hausNr);
+        adresse.addContent(plz);
+        adresse.addContent(ort);
+
+        Element[] elements = {
+                vornamen,
+                nachname,
+                ausweisNr,
+                adresse,
+        };
+        newGenericXML(fileName,"vertragspartner", elements);
+    }
 
     public void readXMLFile(File xmlDatei){
         if(xmlDatei != null){
@@ -74,40 +101,39 @@ import java.util.Map;
 //        return null;
     }
 
+    private String folderPath(){
+       String folderPath = Main.PROJECTPATH + "./xmls";
+        // Create the folder if it doesn't exist already
+        File folder = new File(folderPath);
+        if (!folder.exists()) {
+            boolean success = folder.mkdirs();
+            if (!success) {
+                System.out.println("Failed to create folder " + folderPath);
+            }
+            return folderPath;
+        }
+        return folderPath;
+    }
+
     public File getXMLFile(){
-        File directory = new File(Main.PROJECTPATH + "/xmls");
-        StringBuilder filesString = new StringBuilder();
-        Map<File, String> fileOptions = new HashMap<>();
+        File directory = new File(Main.PROJECTPATH + "./xmls");
+        DataLayerManager dlm = DataLayerManager.getInstance();
+        List<DataLayerManager.AnswerOption<File>> listOption = new ArrayList<>();
         if(directory.isDirectory()){
             File[] xmlFiles = directory.listFiles(xmlFileNameFilter());
             if(xmlFiles != null) {
-                for(int i = 0; i < xmlFiles.length; i++){
-                    File file = xmlFiles[i];
-                    String option = Integer.toString(i);
-                    fileOptions.put(file, option);
-                    filesString.append(xmlFiles[i].getName()).append(" (").append(i).append(") ");
+                for(var file : xmlFiles){
+                    DataLayerManager.AnswerOption<File> fileAt = dlm.new AnswerOption<>(() -> file, file.toString());
+                    listOption.add(fileAt);
                 }
             }
         }
-        System.out.println("Welche Datei möchten Sie öffnen?");
-        System.out.println(filesString);
-        File foundFile = null;
-            if(!fileOptions.isEmpty()){
-                do{
-                    for (var entry : fileOptions.entrySet()){
-                        if (entry != null){
-                            if(Main.sc.next().equals(entry.getValue())){
-                                foundFile = entry.getKey();
-                                System.out.println("Selected File: " + foundFile.toString());
-                            }
-                            else {
-                                System.out.println("Ungültige Eingabe");
-                            }
-                        }
-                    }
-                }while (foundFile == null);
-            }
-        return foundFile;
+
+        @SuppressWarnings("unchecked")
+        DataLayerManager.AnswerOption<File>[] array = new DataLayerManager.AnswerOption[listOption.size()];
+        array = listOption.toArray(array);
+
+        return DataLayerManager.ConsoleOptions("Welche Datei möchten Sie öffnen?", array);
     }
 
     private FilenameFilter xmlFileNameFilter(){
