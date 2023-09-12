@@ -6,7 +6,6 @@ import Kaufvertrag.businessObjects.IVertragspartner;
 import Kaufvertrag.businessObjects.IWare;
 
 public class DataLayerSqlite implements IDataLayer {
-
     @Override
     public IDao<IVertragspartner, String> getDaoVertragspartner() {
         return null;

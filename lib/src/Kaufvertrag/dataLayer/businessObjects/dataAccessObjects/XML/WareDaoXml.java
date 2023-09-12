@@ -4,13 +4,14 @@ import Kaufvertrag.dataLayer.businessObjects.dataAccessObjects.IDao;
 import Kaufvertrag.exceptions.DaoException;
 
 import java.util.List;
+import java.util.Scanner;
 
 /**
  * Soll IWare später benutzen.
  * */
 public class WareDaoXml implements IDao {
     @Override
-    public Object creat() {
+    public Object create() {
        return new WareDaoXml();
     }
 
@@ -21,17 +22,16 @@ public class WareDaoXml implements IDao {
 
     @Override
     public Object read(Object id) throws DaoException {
-        return null;
+        return null; //PLACEHOLDER
     }
 
     @Override
     public List readAll() throws DaoException {
-         return null;
+        return null; //PLACEHOLDER
     }
 
     @Override
     public void update(Object objectToUpdate) throws DaoException {
-
     }
 
     @Override

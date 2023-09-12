@@ -1,37 +1,40 @@
 package Kaufvertrag;
 
-import Kaufvertrag.dataLayer.businessObjects.Adresse;
-import Kaufvertrag.dataLayer.businessObjects.Kaufvertrag;
-import Kaufvertrag.dataLayer.businessObjects.Vertragspartner;
-import Kaufvertrag.dataLayer.businessObjects.Ware;
+import Kaufvertrag.businessObjects.IVertragspartner;
+import Kaufvertrag.businessObjects.IWare;
 import Kaufvertrag.dataLayer.businessObjects.dataAccessObjects.DataLayerManager;
+import Kaufvertrag.dataLayer.businessObjects.dataAccessObjects.IDao;
+import Kaufvertrag.dataLayer.businessObjects.dataAccessObjects.IDataLayer;
+import Kaufvertrag.exceptions.DaoException;
+
+import java.util.Scanner;
 
 
 public class Main {
 
-    public static String projectPath = System.getProperty("user.dir");
+    public static final String PROJECTPATH = System.getProperty("user.dir");
+    public static Scanner sc;
     public static void main(String[] args) {
-        Vertragspartner kaeufer = new Vertragspartner("Käu", "Fer");
-        Adresse adresseKaeufer = new Adresse("Musterstr", "6", "28855", "Bremen");
-        kaeufer.setAdresse(adresseKaeufer);
-        kaeufer.setAusweisNr("0815");
-
-        Vertragspartner verkaeufer = new Vertragspartner("Ver", "Käufer");
-        Adresse adresseVerkaeufer = new Adresse("GysiStraße", "22", "28866", "Oldenburg");
-        verkaeufer.setAdresse(adresseVerkaeufer);
-        verkaeufer.setAusweisNr("2407");
-
-        Ware ware = new Ware("Produkt A", 19.99);
-        ware.setBeschreibung("Produkt A is ein tolles Produkt...");
-
-        Ware ware1 = new Ware("Produkt B", 9.99);
-        ware1.setBeschreibung("Produkt B ist ebenfalls ein tolles Produkt...");
-
-        Kaufvertrag kaufvertrag = new Kaufvertrag(kaeufer, verkaeufer, ware);
-
-        DataLayerManager manager = DataLayerManager.getInstance();
-
-        //System.out.println(kaufvertrag);
-        //System.out.println("Project Path: " + projectPath);
+        sc = new Scanner(System.in);
+        DataLayerManager dlm = DataLayerManager.getInstance();
+        try {
+            IDataLayer dataLayer = dlm.getDataLayer();
+            DataLayerManager.AnswerOption<Object> wareAt = dlm.new AnswerOption<>(() -> {
+                IDao<IWare, Long> ware = dataLayer.getDaoWare();
+                return ware;
+            }, "Eine Ware");
+            DataLayerManager.AnswerOption<Object> partnerAt = dlm.new AnswerOption<>(() -> {
+                IDao<IVertragspartner, String> vertragspartner = dataLayer.getDaoVertragspartner();
+                return vertragspartner;
+            }, "Einen Vertragspartner");
+            DataLayerManager.ConsoleOptions("Was möchten Sie persitieren?", wareAt, partnerAt);
+        } catch (DaoException e) {
+            e.printStackTrace();
+        }
+        sc.close();
+    }
+    private static void test(){
+        String test = "TEST TEST";
+        System.out.println(test);
     }
 }
