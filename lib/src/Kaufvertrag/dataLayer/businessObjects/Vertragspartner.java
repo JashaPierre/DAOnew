@@ -3,6 +3,7 @@ package Kaufvertrag.dataLayer.businessObjects;
 import Kaufvertrag.businessObjects.IAdresse;
 import Kaufvertrag.businessObjects.IVertragspartner;
 import Kaufvertrag.dataLayer.businessObjects.dataAccessObjects.DataLayerManager;
+import Kaufvertrag.dataLayer.businessObjects.dataAccessObjects.UIManager;
 
 public class Vertragspartner implements IVertragspartner {
     private String vorname;
@@ -39,8 +40,8 @@ public class Vertragspartner implements IVertragspartner {
         if(!ausweisNr.equals(""))
             this.ausweisNr = ausweisNr;
         else {
-            DataLayerManager dlm = DataLayerManager.getInstance();
-            this.ausweisNr = dlm.returnInput(
+            UIManager ui = UIManager.getInstance();
+            this.ausweisNr = ui.returnInput(
                     "Geben Sie eine gültige Ausweisnummer ein.",
                     "[A-Z0-9]{6,12}",
                     "Kein gültiges format für eine Ausweisnummer."
