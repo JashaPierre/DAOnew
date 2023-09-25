@@ -1,23 +1,24 @@
 package Kaufvertrag.dataLayer.businessObjects.dataAccessObjects.sqlite;
 
+import Kaufvertrag.businessObjects.IVertragspartner;
 import Kaufvertrag.dataLayer.businessObjects.dataAccessObjects.IDao;
 import Kaufvertrag.exceptions.DaoException;
 
 import java.util.List;
 
-public class VertragspartnerDaoSqlite implements IDao {
+public class VertragspartnerDaoSqlite implements IDao<IVertragspartner, String> {
     @Override
-    public Object create() {
+    public IVertragspartner create() {
         return null;
     }
 
     @Override
-    public void create(Object objectToInsert) throws DaoException {
+    public void create(IVertragspartner objectToInsert) throws DaoException {
 
     }
 
     @Override
-    public Object read(Object id) throws DaoException {
+    public IVertragspartner read(String id) throws DaoException {
         return null;
     }
 
@@ -27,12 +28,12 @@ public class VertragspartnerDaoSqlite implements IDao {
     }
 
     @Override
-    public void update(Object objectToUpdate) throws DaoException {
+    public void update(IVertragspartner objectToUpdate) throws DaoException {
 
     }
 
     @Override
-    public void delete(Object id) throws DaoException {
+    public void delete(String id) throws DaoException {
 
     }
 }

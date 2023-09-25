@@ -4,6 +4,7 @@ import Kaufvertrag.Main;
 import Kaufvertrag.businessObjects.IVertragspartner;
 import Kaufvertrag.businessObjects.IWare;
 import Kaufvertrag.dataLayer.businessObjects.dataAccessObjects.DataLayerManager;
+import Kaufvertrag.dataLayer.businessObjects.dataAccessObjects.UIManager;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.input.SAXBuilder;
@@ -117,23 +118,23 @@ import java.util.List;
 
     public File getXMLFile(){
         File directory = new File(Main.PROJECTPATH + "./xmls");
-        DataLayerManager dlm = DataLayerManager.getInstance();
-        List<DataLayerManager.AnswerOption<File>> listOption = new ArrayList<>();
+        UIManager ui = UIManager.getInstance();
+        List<UIManager.AnswerOption<File>> listOption = new ArrayList<>();
         if(directory.isDirectory()){
             File[] xmlFiles = directory.listFiles(xmlFileNameFilter());
             if(xmlFiles != null) {
                 for(var file : xmlFiles){
-                    DataLayerManager.AnswerOption<File> fileAt = dlm.new AnswerOption<>(() -> file, file.toString());
+                    UIManager.AnswerOption<File> fileAt = ui.new AnswerOption<>(() -> file, file.toString());
                     listOption.add(fileAt);
                 }
             }
         }
 
         @SuppressWarnings("unchecked")
-        DataLayerManager.AnswerOption<File>[] array = new DataLayerManager.AnswerOption[listOption.size()];
+        UIManager.AnswerOption<File>[] array = new UIManager.AnswerOption[listOption.size()];
         array = listOption.toArray(array);
 
-        return DataLayerManager.ConsoleOptions("Welche Datei möchten Sie öffnen?", array);
+        return UIManager.ConsoleOptions("Welche Datei möchten Sie öffnen?", array);
     }
 
     private FilenameFilter xmlFileNameFilter(){
