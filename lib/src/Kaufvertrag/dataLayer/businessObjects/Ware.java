@@ -7,7 +7,7 @@ import java.util.List;
 public class Ware implements IWare {
     private String bezeichnung;
     private String beschreibung;
-    private long getId;
+    private long ID;
     private double preis;
     private List<String> besonderheitenListe;
     private List<String> maengelListe;
@@ -18,7 +18,7 @@ public class Ware implements IWare {
 
     @Override
     public long getId() {
-        return getId;
+        return ID;
     }
 
     @Override

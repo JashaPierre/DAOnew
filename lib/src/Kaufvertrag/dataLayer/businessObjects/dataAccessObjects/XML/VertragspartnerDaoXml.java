@@ -6,11 +6,19 @@ import Kaufvertrag.dataLayer.businessObjects.Vertragspartner;
 import Kaufvertrag.dataLayer.businessObjects.dataAccessObjects.IDao;
 import Kaufvertrag.dataLayer.businessObjects.dataAccessObjects.UIManager;
 import Kaufvertrag.exceptions.DaoException;
+import org.jdom2.Document;
+import org.jdom2.Element;
 
+import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class VertragspartnerDaoXml implements IDao<IVertragspartner,String> {
 
+    /**
+     * Erschafft einen neuen Vertragspartner, wenn gewünscht auch zwei und stattet ihn mit den gewünschten Paramtern aus.
+     * */
     @Override
     public IVertragspartner create() {
         UIManager ui = UIManager.getInstance();
@@ -20,10 +28,11 @@ public class VertragspartnerDaoXml implements IDao<IVertragspartner,String> {
         String nachname = ui.getScanner().next();
         Vertragspartner partner = new Vertragspartner(vorname, nachname);
 
-        UIManager.AnswerOption<Object> jaAt = ui.new AnswerOption<>(() -> {partner.setAusweisNr(""); return null;}, "Ja");
-        UIManager.AnswerOption<Object> neinAt = ui.new AnswerOption<>(null, "Nein");
-        ui.ConsoleOptions("Möchten Sie dem Vertragspartner eine Ausweisnummer geben?", jaAt, neinAt);
-        jaAt = ui.new AnswerOption<>(() -> {
+        UIManager.AnswerOption<Object> jaA = ui.new AnswerOption<>(() -> {
+            partner.setAusweisNr(""); return null;}, "Ja");
+        UIManager.AnswerOption<Object> neinA = ui.new AnswerOption<>(null, "Nein");
+        ui.ConsoleOptions("Möchten Sie dem Vertragspartner eine Ausweisnummer geben?", jaA, neinA);
+        jaA = ui.new AnswerOption<>(() -> {
             String strasse = ui.returnInput(
                     "Geben Sie einen Straßennamen ein.",
                     "^[-\\p{L}\\s]*$",
@@ -47,8 +56,8 @@ public class VertragspartnerDaoXml implements IDao<IVertragspartner,String> {
             partner.setAdresse(new Adresse(strasse, hausNr, plz , ort));
             return null;
             }, "Ja");
-        neinAt = ui.new AnswerOption<>(null, "Nein");
-        ui.ConsoleOptions("Möchten Sie dem Vertragspartner eine Adresse zuordnen?", jaAt, neinAt);
+        neinA = ui.new AnswerOption<>(null, "Nein");
+        ui.ConsoleOptions("Möchten Sie dem Vertragspartner eine Adresse zuordnen?", jaA, neinA);
         return partner;
     }
 
@@ -57,14 +66,43 @@ public class VertragspartnerDaoXml implements IDao<IVertragspartner,String> {
         //PLACEHOLDER
     }
 
+    /**
+     * Sucht einen Vertragspartner durch die sich im XML befindenden ID
+     * */
     @Override
     public IVertragspartner read(String id) throws DaoException {
-        return null; //PLACEHOLDER
+        ServiceXml sXML = ServiceXml.getInstance();
+        if(sXML.getXMLFileList().isEmpty())
+            return null;
+        for (File file : sXML.getXMLFileList()){
+            Document doc = sXML.readXMLFile(file);
+            Element root = doc.getRootElement();
+            if(root.getChild("Vertragspartner").getAttributeValue("ID").equals(id)){
+                Element partnerNode = root.getChild("Vertragspartner");
+                return this.parseXMLtoPartner(partnerNode);
+            }
+        }
+        return null;
     }
 
+    /**
+     * Sucht alle XMLs, die Vertragspartner beinhalten, und gibt diese als Liste zurück
+     * */
     @Override
-    public List readAll() throws DaoException {
-        return null; //PLACEHOLDER
+    public List<IVertragspartner> readAll() throws DaoException {
+        List<IVertragspartner> partnerList = new ArrayList<>();
+        ServiceXml sXML = ServiceXml.getInstance();
+        if(sXML.getXMLFileList().isEmpty())
+            return null;
+        for (File file : sXML.getXMLFileList()){
+           Document doc = sXML.readXMLFile(file);
+           Element root = doc.getRootElement();
+           if(root.getChild("Vertragspartner") != null){
+               Element partnerNode = root.getChild("Vertragspartner");
+               partnerList.add(this.parseXMLtoPartner(partnerNode));
+           }
+        }
+        return partnerList;
     }
 
     @Override
@@ -75,6 +113,30 @@ public class VertragspartnerDaoXml implements IDao<IVertragspartner,String> {
     @Override
     public void delete(String id) throws DaoException {
         //PLACEHOLDER
+    }
+
+    private IVertragspartner parseXMLtoPartner(Element partnerNode){
+        String vorname = partnerNode.getChild("Vorname").getValue();
+        String nachname = partnerNode.getChild("Nachname").getValue();
+
+        String ausweisNr = Optional.ofNullable(partnerNode.getChild("AusweisNr")).map(Element::getValue).orElse("");
+        String adresse_s = Optional.ofNullable(partnerNode.getChild("Adresse")).map(Element::getValue).orElse("");
+        String strasse = Optional.ofNullable(partnerNode.getChild("Strasse")).map(Element::getValue).orElse("");
+        String hausNr = Optional.ofNullable(partnerNode.getChild("HausNr")).map(Element::getValue).orElse("");
+        String plz = Optional.ofNullable(partnerNode.getChild("PLZ")).map(Element::getValue).orElse("");
+        String ort = Optional.ofNullable(partnerNode.getChild("Ort")).map(Element::getValue).orElse("");
+
+        Vertragspartner partner = new Vertragspartner(vorname, nachname);
+
+        if(!ausweisNr.equals(""))
+            partner.setAusweisNr(ausweisNr);
+
+        Adresse adresse;
+        if(!adresse_s.equals("") && !strasse.equals("") && !hausNr.equals("") && !plz.equals("") && !ort.equals("")){
+            adresse = new Adresse(strasse,hausNr,plz,ort);
+            partner.setAdresse(adresse);
+        }
+        return partner;
     }
 
 

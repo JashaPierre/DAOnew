@@ -5,11 +5,9 @@ import Kaufvertrag.dataLayer.businessObjects.dataAccessObjects.IDataLayer;
 import Kaufvertrag.dataLayer.businessObjects.dataAccessObjects.UIManager;
 import Kaufvertrag.exceptions.DaoException;
 
-import java.io.Reader;
-
 
 public class Main {
-    public static final String PROJECTPATH = System.getProperty("user.dir");    public static Reader reader;
+    public static final String PROJECTPATH = System.getProperty("user.dir");
     public static void main(String[] args) {
         try {
             DataLayerManager dlm = DataLayerManager.getInstance();
