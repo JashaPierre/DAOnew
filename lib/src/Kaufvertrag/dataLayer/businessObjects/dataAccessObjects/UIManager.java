@@ -1,7 +1,6 @@
 package Kaufvertrag.dataLayer.businessObjects.dataAccessObjects;
 
-import Kaufvertrag.Main;
-
+import java.util.Scanner;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -9,14 +8,27 @@ import java.util.concurrent.Future;
 
 public class UIManager {
     private static UIManager instance;
-    private UIManager(){}
+    private Scanner sc;
+    private UIManager(){
+        sc = new Scanner(System.in);
+    }
     public static UIManager getInstance(){
-        if(instance == null)
+        if(instance == null){
             return instance = new UIManager();
+        }
         return instance;
     }
-    @SafeVarargs
-    public static <V> V ConsoleOptions(String frage, AnswerOption<V>... answers){
+
+    public Scanner getScanner() {
+        return sc;
+    }
+
+    public void closeScanner() {
+        if(sc != null)
+            sc.close();
+    }
+
+    public Object ConsoleOptions(String frage, AnswerOption<?>... answers){
         StringBuilder antwortString = new StringBuilder();
         if(!frage.equals("")) {
             antwortString.append(frage);
@@ -30,7 +42,6 @@ public class UIManager {
             antwortString.append(answers[i].answerText);
             antwortString.append(" (").append("\u001B[32m").append(i + 1).append("\u001B[0m").append(") ");
         }
-        V result;
         if(!antwortString.isEmpty()) {
             if(antwortString.length() > 150){
                 String searchString = ": ";
@@ -40,12 +51,11 @@ public class UIManager {
             System.out.println(antwortString);
         }
         do{
-            String c = Main.sc.next();
+            String c = sc.next();
             try{
                 int choice = Integer.parseInt(c);
                 if(answers[choice-1] != null){
-                    result = answers[choice-1].executeCallable();
-                    break;
+                    return answers[choice-1].executeCallable();
                 }
             }catch (Exception e){
                 if(e instanceof IndexOutOfBoundsException) {
@@ -56,11 +66,10 @@ public class UIManager {
                 }
             }
         }while (true);
-        return result;
     }
 
     // AusweisNr T220001293
-    // Irgendwo Straße 33
+    // Irgendwo-Straße 33
 
     public String returnInput(String request, String format, String errorMessage) {
         if (!request.equals("")) {
@@ -70,9 +79,9 @@ public class UIManager {
         boolean useFormat = !format.equals("");
         do {
             // Consume any remaining input
-            Main.sc.next();
+            sc.next();
 
-            input = Main.sc.nextLine();
+            input = sc.nextLine();
 
             if (input.matches(format) || !useFormat) {
                 return input;
