@@ -3,7 +3,6 @@ package Kaufvertrag.dataLayer.businessObjects.dataAccessObjects.XML;
 import Kaufvertrag.Main;
 import Kaufvertrag.businessObjects.IVertragspartner;
 import Kaufvertrag.businessObjects.IWare;
-import Kaufvertrag.dataLayer.businessObjects.dataAccessObjects.DataLayerManager;
 import Kaufvertrag.dataLayer.businessObjects.dataAccessObjects.UIManager;
 import org.jdom2.Document;
 import org.jdom2.Element;
@@ -134,7 +133,7 @@ import java.util.List;
         UIManager.AnswerOption<File>[] array = new UIManager.AnswerOption[listOption.size()];
         array = listOption.toArray(array);
 
-        return UIManager.ConsoleOptions("Welche Datei möchten Sie öffnen?", array);
+        return (File) ui.ConsoleOptions("Welche Datei möchten Sie öffnen?", array);
     }
 
     private FilenameFilter xmlFileNameFilter(){

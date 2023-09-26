@@ -1,6 +1,5 @@
 package Kaufvertrag.dataLayer.businessObjects.dataAccessObjects.XML;
 
-import Kaufvertrag.Main;
 import Kaufvertrag.businessObjects.IVertragspartner;
 import Kaufvertrag.dataLayer.businessObjects.Adresse;
 import Kaufvertrag.dataLayer.businessObjects.Vertragspartner;
@@ -15,16 +14,15 @@ public class VertragspartnerDaoXml implements IDao<IVertragspartner,String> {
     @Override
     public IVertragspartner create() {
         UIManager ui = UIManager.getInstance();
-
         System.out.println("Wie lautet der Vorname des Vertragspartners?");
-        String vorname = Main.sc.next();
+        String vorname = ui.getScanner().next();
         System.out.println("Wie lautet der Nachname des Vertragspartners?");
-        String nachname = Main.sc.next();
+        String nachname = ui.getScanner().next();
         Vertragspartner partner = new Vertragspartner(vorname, nachname);
 
         UIManager.AnswerOption<Object> jaAt = ui.new AnswerOption<>(() -> {partner.setAusweisNr(""); return null;}, "Ja");
         UIManager.AnswerOption<Object> neinAt = ui.new AnswerOption<>(null, "Nein");
-        UIManager.ConsoleOptions("Möchten Sie dem Vertragspartner eine Ausweisnummer geben?", jaAt, neinAt);
+        ui.ConsoleOptions("Möchten Sie dem Vertragspartner eine Ausweisnummer geben?", jaAt, neinAt);
         jaAt = ui.new AnswerOption<>(() -> {
             String strasse = ui.returnInput(
                     "Geben Sie einen Straßennamen ein.",
@@ -50,7 +48,7 @@ public class VertragspartnerDaoXml implements IDao<IVertragspartner,String> {
             return null;
             }, "Ja");
         neinAt = ui.new AnswerOption<>(null, "Nein");
-        UIManager.ConsoleOptions("Möchten Sie dem Vertragspartner eine Adresse zuordnen?", jaAt, neinAt);
+        ui.ConsoleOptions("Möchten Sie dem Vertragspartner eine Adresse zuordnen?", jaAt, neinAt);
         return partner;
     }
 

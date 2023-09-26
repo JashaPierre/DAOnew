@@ -1,9 +1,7 @@
 package Kaufvertrag.dataLayer.businessObjects.dataAccessObjects.XML;
 
-import Kaufvertrag.Main;
 import Kaufvertrag.businessObjects.IVertragspartner;
 import Kaufvertrag.businessObjects.IWare;
-import Kaufvertrag.dataLayer.businessObjects.dataAccessObjects.DataLayerManager;
 import Kaufvertrag.dataLayer.businessObjects.dataAccessObjects.IDao;
 import Kaufvertrag.dataLayer.businessObjects.dataAccessObjects.IDataLayer;
 import Kaufvertrag.dataLayer.businessObjects.dataAccessObjects.UIManager;
@@ -26,7 +24,7 @@ public class DataLayerXml implements IDataLayer {
             return  null;
         }, "Einen neuen Vertragspartner Einfügen");
         UIManager.AnswerOption<Object> readAt = ui.new AnswerOption<>(() -> {
-            partnerXmlDao.read(Main.sc.next());
+            partnerXmlDao.read(ui.getScanner().next());
             return  null;
         }, "Vorhanden Vertragspartner finden");
         UIManager.AnswerOption<Object> updateAt = ui.new AnswerOption<>(() -> {
@@ -34,12 +32,12 @@ public class DataLayerXml implements IDataLayer {
             return  null;
         }, "Einem vorhandenen Vertragspartner aktualisieren");
         UIManager.AnswerOption<Object> deleteAt = ui.new AnswerOption<>(() -> {
-            partnerXmlDao.delete(Main.sc.next());
+            partnerXmlDao.delete(ui.getScanner().next());
             return null;
         }, "Einem vertragspartner löschen");
 
         // Map<UIManager.AnswerOption<Object>, Object> results
-        Object result = UIManager.ConsoleOptions("Wie möchten Sie den Vertragspartner persistieren?", createAt, creatInsertAt, readAt, updateAt, deleteAt);
+        Object result = ui.ConsoleOptions("Wie möchten Sie den Vertragspartner persistieren?", createAt, creatInsertAt, readAt, updateAt, deleteAt);
         return partnerXmlDao;
     }
 
