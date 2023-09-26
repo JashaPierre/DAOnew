@@ -2,6 +2,7 @@ package Kaufvertrag.dataLayer.businessObjects.dataAccessObjects.XML;
 
 import Kaufvertrag.businessObjects.IVertragspartner;
 import Kaufvertrag.businessObjects.IWare;
+import Kaufvertrag.dataLayer.businessObjects.Vertragspartner;
 import Kaufvertrag.dataLayer.businessObjects.dataAccessObjects.IDao;
 import Kaufvertrag.dataLayer.businessObjects.dataAccessObjects.IDataLayer;
 import Kaufvertrag.dataLayer.businessObjects.dataAccessObjects.UIManager;
@@ -14,9 +15,14 @@ public class DataLayerXml implements IDataLayer {
         UIManager ui = UIManager.getInstance();
         ServiceXml sXML = ServiceXml.getInstance();
         UIManager.AnswerOption<Object> createAt = ui.new AnswerOption<>(() -> {
-            var partner = partnerXmlDao.create();
-            String fileName = ui.returnInput("Wie soll das neue XML heißen?", "","");
-            sXML.newVertragspartnerXML(partner, fileName);
+            Vertragspartner partner1 = (Vertragspartner) partnerXmlDao.create();
+            UIManager.AnswerOption<Object> jaAt = ui.new AnswerOption<>(partnerXmlDao::create, "nein");
+            UIManager.AnswerOption<Object> neinAt = ui.new AnswerOption<>(null, "nein");
+            Vertragspartner partner2 = (Vertragspartner) ui.ConsoleOptions("Für einen Vertrag werden zwei Partner benötigt. Wollen Sie einen weiteren Partner hinzufügen?", jaAt, neinAt);
+            String fileName = ui.returnInput("Wie soll das neue XML heißen?");
+            if(partner1 != null && partner2 != null){
+                sXML.newVertragspartnerXML(partner1, fileName);
+            }
             return  null;
         }, "Einen neuen Vertragspartner Erstellen");
         UIManager.AnswerOption<Object> creatInsertAt = ui.new AnswerOption<>(() -> {

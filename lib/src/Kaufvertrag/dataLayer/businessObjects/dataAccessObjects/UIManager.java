@@ -27,6 +27,11 @@ public class UIManager {
         if(sc != null)
             sc.close();
     }
+    //Hauptsächlich für Testzwecke
+    public void setNewScanner(Scanner newScanner) {
+        this.closeScanner();
+        sc = newScanner; // Set the new scanner
+    }
 
     public Object ConsoleOptions(String frage, AnswerOption<?>... answers){
         StringBuilder antwortString = new StringBuilder();
@@ -70,27 +75,41 @@ public class UIManager {
 
     // AusweisNr T220001293
     // Irgendwo-Straße 33
-
+    public String returnInput(String request) {
+        return returnInput(request, "", "", -1);
+    }
+    public String returnInput(String request, String format) {
+        return returnInput(request,format, "", -1);
+    }
     public String returnInput(String request, String format, String errorMessage) {
+        return returnInput(request,format, errorMessage, -1);
+    }
+    public String returnInput(String request, String format, String errorMessage, int iterations) {
         if (!request.equals("")) {
             System.out.println(request);
         }
         String input;
         boolean useFormat = !format.equals("");
-        do {
-            // Consume any remaining input
-            sc.next();
-
+        int i = 0;
+        while(true) {
             input = sc.nextLine();
-
-            if (input.matches(format) || !useFormat) {
-                return input;
-            } else if (!errorMessage.equals("")) {
-                System.out.println(errorMessage);
-            } else {
-                System.out.println("Keine gültige Eingabe");
+            while(!input.isBlank()){  //um Lehrzeilen bei der Eingabe zu umgehen
+//                System.out.println("Input = "+ input);
+                if (input.matches(format) || !useFormat) {
+                    return input;
+                } else if (!errorMessage.equals("")) {
+                    System.out.println(errorMessage);
+                } else {
+                    System.out.println("Keine gültige Eingabe");
+                }
+                if(iterations != -1){
+                    i++;
+                    if(i >= iterations){
+                        return null;
+                    }
+                }
             }
-        } while (true);
+        }
     }
 
     public class AnswerOption<T> {

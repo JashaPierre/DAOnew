@@ -3,6 +3,7 @@ package Kaufvertrag.dataLayer.businessObjects.dataAccessObjects.XML;
 import Kaufvertrag.Main;
 import Kaufvertrag.businessObjects.IVertragspartner;
 import Kaufvertrag.businessObjects.IWare;
+import Kaufvertrag.dataLayer.businessObjects.Vertragspartner;
 import Kaufvertrag.dataLayer.businessObjects.dataAccessObjects.UIManager;
 import org.jdom2.Document;
 import org.jdom2.Element;
@@ -47,7 +48,7 @@ import java.util.List;
         }
     }
 
-    public void newVertragspartnerXML(IVertragspartner vertragspartner, String fileName){
+    public void newVertragspartnerXML(Vertragspartner vertragspartner, String fileName){
         Element vornamen = new Element("vornamen");
         Element nachname = new Element("nachname");
         Element ausweisNr = new Element("ausweisNr");

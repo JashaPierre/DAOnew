@@ -26,7 +26,7 @@ public class VertragspartnerDaoXml implements IDao<IVertragspartner,String> {
         jaAt = ui.new AnswerOption<>(() -> {
             String strasse = ui.returnInput(
                     "Geben Sie einen Straßennamen ein.",
-                    "^[-A-Za-z\\s]*$",
+                    "^[-\\p{L}\\s]*$",
                     "Kein gültiges format für einen Straßennamen."
             );
             String hausNr  = ui.returnInput(
