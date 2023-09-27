@@ -15,27 +15,37 @@ public class WareDaoXml implements IDao<IWare, Long> {
     @Override
     public IWare create() {
         ConsoleManager ui = ConsoleManager.getInstance();
-        Ware ware = null;
         String bezeichnung = ui.returnInput("Geben Sie eine Bezeichnung der Ware ein");
-        while(true){
-            String preis = ui.returnInput("Geben Sie eine Bezeichnung der Ware ein",
+        double preis;
+        while (true){
+            String preisString = ui.returnInput("Geben Sie eine Bezeichnung der Ware ein",
                     "^\\d+(,\\d{1,2})?€$",
                     "Keine gültige Eingabe für einen Preis.");
             try{
-                ware = new Ware(bezeichnung, Double.parseDouble(preis));
+                preis = Double.parseDouble(preisString);
                 break;
             }catch (NumberFormatException e){
                 System.out.println("Keine gültige Eingabe für einen Preis.");
             }
-            ConsoleManager.AnswerOption<Object> jaA = ui.new AnswerOption<>(() ->
-               ui.returnInput("Geben Sie eine Beschreibung ein.")
-               , "Ja");
-            ConsoleManager.AnswerOption<Object> neinA = ui.new AnswerOption<>(null, "Nein");
-            String beschreibung = (String) ui.ConsoleOptions("Möchten Sie der Ware eine Beschreibung hinzufügen?", jaA, neinA);
-            if(beschreibung != null){
-                ware.setBeschreibung(beschreibung);
-            }
         }
+        Ware ware = new Ware(bezeichnung, preis);
+
+        ConsoleManager.AnswerOption<Object> jaA = ui.new AnswerOption<>(() ->{
+            String bez = ui.returnInput("Geben Sie eine Beschreibung ein.");
+            ware.setBeschreibung(bez);
+            return null;}, "Ja");
+        ConsoleManager.AnswerOption<Object> neinA = ui.new AnswerOption<>(null, "Nein");
+        ui.ConsoleOptions("Möchten Sie der Ware eine Beschreibung hinzufügen?", jaA, neinA);
+
+       jaA = ui.new AnswerOption<>(() ->{
+           while(true){
+               String bez = ui.returnInput("Geben Sie eine Beschreibung ein.");
+           }
+//            ware.setBeschreibung(bez);
+            return null;}, "Ja");
+        neinA = ui.new AnswerOption<>(null, "Nein");
+        ui.ConsoleOptions("Möchten Sie der Ware Besondehieten hinzufügen?", jaA, neinA);
+
 
 
         return ware;
