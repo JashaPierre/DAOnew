@@ -17,10 +17,17 @@ public class WareDaoXml implements IDao<IWare, Long> {
         ConsoleManager ui = ConsoleManager.getInstance();
         String bezeichnung = ui.returnInput("Geben Sie eine Bezeichnung der Ware ein");
         double preis;
-        String preisString = ui.returnInput("Geben Sie einen Preis der Ware ein",
-                "^\\d+(,\\d{1,2})?€$",
-                "Keine gültige Eingabe für einen Preis.");
-        preis = Double.parseDouble(preisString);
+        while (true){
+            String preisString = ui.returnInput("Geben Sie einen Preis der Ware ein",
+                    "^\\d+(,\\d{1,2})?€$",
+                    "Keine gültige Eingabe für einen Preis.");
+            try{
+                preis = Double.parseDouble(preisString);
+                break;
+            }catch (NumberFormatException e){
+                System.out.println("Keine gültige Eingabe für einen Preis.");
+            }
+        }
         Ware ware = new Ware(bezeichnung, preis);
 
         ConsoleManager.AnswerOption<Object> jaA = ui.new AnswerOption<>(() ->{

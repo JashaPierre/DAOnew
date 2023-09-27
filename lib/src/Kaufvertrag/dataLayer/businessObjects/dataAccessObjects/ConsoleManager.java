@@ -93,22 +93,25 @@ public class ConsoleManager {
         String input;
         boolean useFormat = !format.equals("");
         int i = 0;
-        while(true) {
-            input = sc.nextLine();
-            while(!input.isBlank()){  //um Lehrzeilen bei der Eingabe zu umgehen
-//                System.out.println("Input = "+ input);
-                if (input.matches(format) || !useFormat) {
-                    return input;
-                } else if (!errorMessage.equals("")) {
-                    System.out.println(errorMessage);
-                } else {
-                    System.out.println("Keine gültige Eingabe");
-                }
-                if(iterations != -1){
-                    i++;
-                    if(i >= iterations){
-                        return null;
-                    }
+
+        while (true) {
+            do {
+                input = sc.nextLine();
+
+            } while (input.isBlank());
+
+            if (input.matches(format) || !useFormat) {
+                return input;
+            } else if (!errorMessage.equals("")) {
+                System.out.println(errorMessage);
+            } else {
+                System.out.println("Keine gültige Eingabe");
+            }
+
+            if (iterations != -1) {
+                i++;
+                if (i >= iterations) {
+                    return null;
                 }
             }
         }
