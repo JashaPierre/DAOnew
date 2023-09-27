@@ -8,20 +8,32 @@ import java.sql.*;
 public class ConnectionManager {
 
     final private static String className = "org.sqlite.JDBC";
-    final private static String connectionString = "jdbc:sqlite:sqlite.db";
+    //final private static String connectionString = "jdbc:sqlite:sqlite.db";
+    final private static String connectionString = "/Users/jashameusel/StudioProjects/LF5/DAOnew/sqlite.db";
 
     private static Connection existingConnection;
-    private static boolean classLoaded;
+    private static boolean classLoaded = false;
 
+    private void loadClass() throws DaoException {
+        if (classLoaded) return;
+        try {
+            Class.forName(className);
+        } catch (ClassNotFoundException e) {
+            throw new DaoException(e.getMessage());
+        }
+        classLoaded = true;
+    }
     public Connection getNewConnection() throws ClassNotFoundException {
+
+
         // Datenbankklasse dynamisch erzeugen.
-        Class.forName (className);
+
         // Verbindung initialisieren.
         String datei = "sqlite.db";  //Dateiname inklusive Pfad.
-        String url = "jdbc:sqlite:" + datei;
+        String url = "jdbc:sqlite:sqlite.db" + datei;
         // Verbindung aufbauen.
         try {
-            existingConnection = DriverManager.getConnection(url);
+            existingConnection = DriverManager.getConnection(connectionString);
             String createAdresseTableSQL = "CREATE TABLE IF NOT EXISTS Adresse (" +
                     "Id INTEGER PRIMARY KEY AUTOINCREMENT," +
                     "Strasse TEXT," +
