@@ -42,7 +42,7 @@ public class DataLayerSqlite implements IDataLayer {
         }, "Einem vertragspartner löschen");
 
         // Map<UIManager.AnswerOption<Object>, Object> results
-        Object result = UIManager.ConsoleOptions("Wie möchten Sie den Vertragspartner persistieren?", createAt, creatInsertAt, readAt, updateAt, deleteAt);
+        Object result = ui.ConsoleOptions("Wie möchten Sie den Vertragspartner persistieren?", createAt, creatInsertAt, readAt, updateAt, deleteAt);
 
 
 

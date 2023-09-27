@@ -20,9 +20,9 @@ public class VertragspartnerDaoSqlite implements IDao { //calls connectManager
         UIManager ui = UIManager.getInstance();
 
         System.out.println("Wie lautet der Vorname des Vertragspartners?");
-        String vorname = Main.sc.next();
+        String vorname = ui.getScanner().next();
         System.out.println("Wie lautet der Nachname des Vertragspartners?");
-        String nachname = Main.sc.next();
+        String nachname = ui.getScanner().next();
         Vertragspartner vertragspartner = new Vertragspartner(vorname, nachname);
 
         UIManager.AnswerOption<Object>  jaAt = ui.new AnswerOption<>(() -> {
@@ -30,7 +30,7 @@ public class VertragspartnerDaoSqlite implements IDao { //calls connectManager
           return null;
         }, "Ja");
         UIManager.AnswerOption<Object> neinAt = ui.new AnswerOption<>(null, "Nein");
-        UIManager.ConsoleOptions("Möchten Sie dem Vertragspartner eine Ausweisnummer zuweisen?", jaAt, neinAt);
+        ui.ConsoleOptions("Möchten Sie dem Vertragspartner eine Ausweisnummer zuweisen?", jaAt, neinAt);
         jaAt = ui.new AnswerOption<>(() -> {
             String strasse = ui.returnInput(
                     "Geben Sie einen Straßennamen ein.",
@@ -56,7 +56,7 @@ public class VertragspartnerDaoSqlite implements IDao { //calls connectManager
             return null;
         },"Ja");
         neinAt = ui.new AnswerOption<>(null, "Nein");
-        UIManager.ConsoleOptions("Möchten Sie dem Vertragspartner eine Adresse zuornen?");
+        ui.ConsoleOptions("Möchten Sie dem Vertragspartner eine Adresse zuornen?");
         return vertragspartner;
 
         //Connection connection = new ConnectionManager().getNewConnection();
