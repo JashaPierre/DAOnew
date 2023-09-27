@@ -17,17 +17,10 @@ public class WareDaoXml implements IDao<IWare, Long> {
         ConsoleManager ui = ConsoleManager.getInstance();
         String bezeichnung = ui.returnInput("Geben Sie eine Bezeichnung der Ware ein");
         double preis;
-        while (true){
-            String preisString = ui.returnInput("Geben Sie eine Bezeichnung der Ware ein",
-                    "^\\d+(,\\d{1,2})?€$",
-                    "Keine gültige Eingabe für einen Preis.");
-            try{
-                preis = Double.parseDouble(preisString);
-                break;
-            }catch (NumberFormatException e){
-                System.out.println("Keine gültige Eingabe für einen Preis.");
-            }
-        }
+        String preisString = ui.returnInput("Geben Sie einen Preis der Ware ein",
+                "^\\d+(,\\d{1,2})?€$",
+                "Keine gültige Eingabe für einen Preis.");
+        preis = Double.parseDouble(preisString);
         Ware ware = new Ware(bezeichnung, preis);
 
         ConsoleManager.AnswerOption<Object> jaA = ui.new AnswerOption<>(() ->{
@@ -38,15 +31,32 @@ public class WareDaoXml implements IDao<IWare, Long> {
         ui.ConsoleOptions("Möchten Sie der Ware eine Beschreibung hinzufügen?", jaA, neinA);
 
        jaA = ui.new AnswerOption<>(() ->{
-           while(true){
-               String bez = ui.returnInput("Geben Sie eine Beschreibung ein.");
+           boolean finished = false;
+           while(!finished){
+               String bes = ui.returnInput("Geben Sie eine Besonderheit an.");
+               ware.getBesonderheiten().add(bes);
+               ConsoleManager.AnswerOption<Object> jaA2 = ui.new AnswerOption<>(() -> false ,"ja");
+               ConsoleManager.AnswerOption<Boolean> neinA2 = ui.new AnswerOption<>(() -> true ,"nein");
+               finished = (Boolean) ui.ConsoleOptions("Wollen Sie der Ware eine weiter Besonderheit geben?", jaA2, neinA2);
            }
-//            ware.setBeschreibung(bez);
-            return null;}, "Ja");
+            return null;
+           }, "Ja");
         neinA = ui.new AnswerOption<>(null, "Nein");
-        ui.ConsoleOptions("Möchten Sie der Ware Besondehieten hinzufügen?", jaA, neinA);
+        ui.ConsoleOptions("Möchten Sie der Ware Besonderheiten hinzufügen?", jaA, neinA);
 
-
+        jaA = ui.new AnswerOption<>(() ->{
+            boolean finished = false;
+            while(!finished){
+                String man = ui.returnInput("Geben Sie einen Mangel an.");
+                ware.getMaengel().add(man);
+                ConsoleManager.AnswerOption<Object> jaA2 = ui.new AnswerOption<>(() -> false ,"ja");
+                ConsoleManager.AnswerOption<Boolean> neinA2 = ui.new AnswerOption<>(() -> true ,"nein");
+                finished = (Boolean) ui.ConsoleOptions("Wollen Sie der Ware eine weiter Besonderheit geben?", jaA2, neinA2);
+            }
+            return null;
+        }, "Ja");
+        neinA = ui.new AnswerOption<>(null, "Nein");
+        ui.ConsoleOptions("Möchten Sie der Ware Mängel hinzufügen?", jaA, neinA);
 
         return ware;
     }
@@ -68,6 +78,8 @@ public class WareDaoXml implements IDao<IWare, Long> {
 
     @Override
     public void update(IWare objectToUpdate) throws DaoException {
+
+
     }
 
     @Override
