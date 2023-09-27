@@ -1,23 +1,19 @@
 package Kaufvertrag.dataLayer.businessObjects.dataAccessObjects.sqlite;
 
-import Kaufvertrag.Main;
 import Kaufvertrag.businessObjects.IVertragspartner;
 import Kaufvertrag.dataLayer.businessObjects.Adresse;
 import Kaufvertrag.dataLayer.businessObjects.Vertragspartner;
+import Kaufvertrag.dataLayer.businessObjects.dataAccessObjects.ConsoleManager;
 import Kaufvertrag.dataLayer.businessObjects.dataAccessObjects.IDao;
-import Kaufvertrag.dataLayer.businessObjects.dataAccessObjects.UIManager;
 import Kaufvertrag.exceptions.DaoException;
 
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.List;
-import java.util.Scanner;
 
 public class VertragspartnerDaoSqlite implements IDao<IVertragspartner, String> { //calls connectManager
 
 
     public IVertragspartner creat() {
-        UIManager ui = UIManager.getInstance();
+        ConsoleManager ui = ConsoleManager.getInstance();
 
         System.out.println("Wie lautet der Vorname des Vertragspartners?");
         String vorname = ui.getScanner().next();
@@ -25,11 +21,11 @@ public class VertragspartnerDaoSqlite implements IDao<IVertragspartner, String> 
         String nachname = ui.getScanner().next();
         Vertragspartner vertragspartner = new Vertragspartner(vorname, nachname);
 
-        UIManager.AnswerOption<Object>  jaAt = ui.new AnswerOption<>(() -> {
+        ConsoleManager.AnswerOption<Object>  jaAt = ui.new AnswerOption<>(() -> {
           vertragspartner.setAusweisNr("");
           return null;
         }, "Ja");
-        UIManager.AnswerOption<Object> neinAt = ui.new AnswerOption<>(null, "Nein");
+        ConsoleManager.AnswerOption<Object> neinAt = ui.new AnswerOption<>(null, "Nein");
         ui.ConsoleOptions("Möchten Sie dem Vertragspartner eine Ausweisnummer zuweisen?", jaAt, neinAt);
         jaAt = ui.new AnswerOption<>(() -> {
 

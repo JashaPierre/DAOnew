@@ -3,7 +3,7 @@ package Kaufvertrag.dataLayer.businessObjects.dataAccessObjects.XML;
 import Kaufvertrag.Main;
 import Kaufvertrag.dataLayer.businessObjects.Vertragspartner;
 import Kaufvertrag.dataLayer.businessObjects.Ware;
-import Kaufvertrag.dataLayer.businessObjects.dataAccessObjects.UIManager;
+import Kaufvertrag.dataLayer.businessObjects.dataAccessObjects.ConsoleManager;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.input.SAXBuilder;
@@ -211,37 +211,72 @@ import java.util.List;
         return xmlFileList;
     }
 
-    public File chooseXML(List<File> xmlFiles){
-        UIManager ui = UIManager.getInstance();
-        List<UIManager.AnswerOption<File>> listOption = new ArrayList<>();
+    /**
+     * Search Though all XML files Recursively for a Name
+     * Returns an Object array containing at [0] the Element child and at [1] the file.  */
+    public Object[] nameSeachAllXml(String name){
+        var fileList = getXMLFileList();
+        for(var file :fileList){
+            Document doc = readXMLFile(file);
+            for(var child : doc.getRootElement().getChildren()){
+                for(var child2 : child.getChildren()){
+                    if(child2.getValue().equals(name)){
+                        return new Object[]{ child, file };
+                    }
+                }
+            }
+        }
+        return null;
+    }
+    public Object[] idSeachAllXml(String id){
+        var fileList = getXMLFileList();
+        for(var file :fileList){
+            Document doc = readXMLFile(file);
+            for(var child : doc.getRootElement().getChildren()){
+                if(child.getAttributeValue("id").equals(id)){
+                    return new Object[]{ child, file };
+                }
+            }
+        }
+        return null;
+    }
+     public File chooseXML(List<File> xmlFiles){
+         return chooseXML(xmlFiles, "");
+     }
+
+    public File chooseXML(List<File> xmlFiles, String frage){
+        ConsoleManager ui = ConsoleManager.getInstance();
+        List<ConsoleManager.AnswerOption<File>> listOption = new ArrayList<>();
 
         if(!xmlFiles.isEmpty()) {
             for(File file : xmlFiles){
-                UIManager.AnswerOption<File> fileA = ui.new AnswerOption<>(() -> file, file.getName());
+                ConsoleManager.AnswerOption<File> fileA = ui.new AnswerOption<>(() -> file, file.getName());
                 listOption.add(fileA);
             }
         }
 
         @SuppressWarnings("unchecked")
-        UIManager.AnswerOption<File>[] array = new UIManager.AnswerOption[listOption.size()];
+        ConsoleManager.AnswerOption<File>[] array = new ConsoleManager.AnswerOption[listOption.size()];
         array = listOption.toArray(array);
-        return (File) ui.ConsoleOptions("Welche Datei möchten Sie öffnen?", array);
+        if(frage.equals(""))
+            frage = "Welche Datei möchten Sie öffnen?";
+        return (File) ui.ConsoleOptions(frage, array);
     }
 
-    public Element UnterKnotenAuswahlen(Document document, String typen, String frage){
-        UIManager ui = UIManager.getInstance();
+    public Element UnterKnotenAuswahlen(Document document, String typen, String tyeChild, String frage){
+        ConsoleManager ui = ConsoleManager.getInstance();
         Element root = document.getRootElement();
-        List<UIManager.AnswerOption<Element>> knoten = new ArrayList<>();
+        List<ConsoleManager.AnswerOption<Element>> knoten = new ArrayList<>();
 
         for(var element : root.getChildren()){
             if(element.getName().equals(typen) && !typen.equals("")){
-                UIManager.AnswerOption<Element> elementA = ui.new AnswerOption<>(() -> element, element.getChild("").getName() +" id: " + element.getAttributeValue("id"));
+                ConsoleManager.AnswerOption<Element> elementA = ui.new AnswerOption<>(() -> element, element.getChild(tyeChild).getValue() + " id: " + element.getAttributeValue("id"));
                 knoten.add(elementA);
             }
         }
 
         @SuppressWarnings("unchecked")
-        UIManager.AnswerOption<Element>[] array = new UIManager.AnswerOption[knoten.size()];
+        ConsoleManager.AnswerOption<Element>[] array = new ConsoleManager.AnswerOption[knoten.size()];
         array = knoten.toArray(array);
         if(frage.isBlank())
             frage = "Welchen Knotenpunkt möchten Sie öffnen?";

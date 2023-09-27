@@ -1,8 +1,8 @@
 package Kaufvertrag;
 
+import Kaufvertrag.dataLayer.businessObjects.dataAccessObjects.ConsoleManager;
 import Kaufvertrag.dataLayer.businessObjects.dataAccessObjects.DataLayerManager;
 import Kaufvertrag.dataLayer.businessObjects.dataAccessObjects.IDataLayer;
-import Kaufvertrag.dataLayer.businessObjects.dataAccessObjects.UIManager;
 import Kaufvertrag.exceptions.DaoException;
 
 
@@ -12,9 +12,9 @@ public class Main {
         try {
             DataLayerManager dlm = DataLayerManager.getInstance();
             IDataLayer dataLayer = dlm.getDataLayer();
-            UIManager ui = UIManager.getInstance();
-            UIManager.AnswerOption<Object> wareAt = ui.new AnswerOption<>(dataLayer::getDaoWare, "Eine Ware");
-            UIManager.AnswerOption<Object> partnerAt = ui.new AnswerOption<>(dataLayer::getDaoVertragspartner, "Einen Vertragspartner");
+            ConsoleManager ui = ConsoleManager.getInstance();
+            ConsoleManager.AnswerOption<Object> wareAt = ui.new AnswerOption<>(dataLayer::getDaoWare, "Eine Ware");
+            ConsoleManager.AnswerOption<Object> partnerAt = ui.new AnswerOption<>(dataLayer::getDaoVertragspartner, "Einen Vertragspartner");
             ui.ConsoleOptions("Was möchten Sie persistieren?", wareAt, partnerAt);
             ui.closeScanner();
         } catch (DaoException e) {
