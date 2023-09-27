@@ -34,9 +34,7 @@ public class DataLayerXml implements IDataLayer {
 
         //create insert
         UIManager.AnswerOption<Object> creatInsertA = ui.new AnswerOption<>(() -> {
-
             Vertragspartner partner = (Vertragspartner) partnerXmlDao.create();
-
             return  null;
         }, "Einen neuen Vertragspartner in eine vorhandene Datei einfügen");
 
@@ -83,7 +81,6 @@ public class DataLayerXml implements IDataLayer {
         UIManager.AnswerOption<Object> creatInsertA = ui.new AnswerOption<>(() -> {
 
             Vertragspartner partner = (Vertragspartner) wareDaoXml.create();
-
             return  null;
         }, "Einen neuen Vertragspartner in eine vorhandene Datei einfügen");
 
