@@ -2,8 +2,8 @@ package Kaufvertrag.dataLayer.businessObjects.dataAccessObjects.XML;
 
 import Kaufvertrag.businessObjects.IWare;
 import Kaufvertrag.dataLayer.businessObjects.Ware;
+import Kaufvertrag.dataLayer.businessObjects.dataAccessObjects.ConsoleManager;
 import Kaufvertrag.dataLayer.businessObjects.dataAccessObjects.IDao;
-import Kaufvertrag.dataLayer.businessObjects.dataAccessObjects.UIManager;
 import Kaufvertrag.exceptions.DaoException;
 
 import java.util.List;
@@ -14,7 +14,7 @@ import java.util.List;
 public class WareDaoXml implements IDao<IWare, Long> {
     @Override
     public IWare create() {
-        UIManager ui = UIManager.getInstance();
+        ConsoleManager ui = ConsoleManager.getInstance();
         Ware ware = null;
         String bezeichnung = ui.returnInput("Geben Sie eine Bezeichnung der Ware ein");
         while(true){
@@ -27,10 +27,10 @@ public class WareDaoXml implements IDao<IWare, Long> {
             }catch (NumberFormatException e){
                 System.out.println("Keine gültige Eingabe für einen Preis.");
             }
-            UIManager.AnswerOption<Object> jaA = ui.new AnswerOption<>(() ->
+            ConsoleManager.AnswerOption<Object> jaA = ui.new AnswerOption<>(() ->
                ui.returnInput("Geben Sie eine Beschreibung ein.")
                , "Ja");
-            UIManager.AnswerOption<Object> neinA = ui.new AnswerOption<>(null, "Nein");
+            ConsoleManager.AnswerOption<Object> neinA = ui.new AnswerOption<>(null, "Nein");
             String beschreibung = (String) ui.ConsoleOptions("Möchten Sie der Ware eine Beschreibung hinzufügen?", jaA, neinA);
             if(beschreibung != null){
                 ware.setBeschreibung(beschreibung);

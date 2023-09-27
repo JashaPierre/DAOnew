@@ -42,9 +42,9 @@ public class DataLayerManager {
         }while (!type.equals("xml") && !type.equals("sqlite"));
         return type;
         */
-        UIManager ui = UIManager.getInstance();
-        UIManager.AnswerOption<String> xmlA = ui.new AnswerOption<>(()-> "xml", "XML");
-        UIManager.AnswerOption<String> sqlA = ui.new AnswerOption<>(()-> "sql" , "Sqlite");
+        ConsoleManager ui = ConsoleManager.getInstance();
+        ConsoleManager.AnswerOption<String> xmlA = ui.new AnswerOption<>(()-> "xml", "XML");
+        ConsoleManager.AnswerOption<String> sqlA = ui.new AnswerOption<>(()-> "sql" , "Sqlite");
         return (String) ui.ConsoleOptions("Welche Form der Persistierung möchten Sie Nutzen?", xmlA, sqlA);
     }
 

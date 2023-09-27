@@ -6,15 +6,15 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-public class UIManager {
-    private static UIManager instance;
+public class ConsoleManager {
+    private static ConsoleManager instance;
     private Scanner sc;
-    private UIManager(){
+    private ConsoleManager(){
         sc = new Scanner(System.in);
     }
-    public static UIManager getInstance(){
+    public static ConsoleManager getInstance(){
         if(instance == null){
-            return instance = new UIManager();
+            return instance = new ConsoleManager();
         }
         return instance;
     }
@@ -34,26 +34,28 @@ public class UIManager {
     }
 
     public Object ConsoleOptions(String frage, AnswerOption<?>... answers){
-        StringBuilder antwortString = new StringBuilder();
+        StringBuilder answerString = new StringBuilder();
         if(!frage.equals("")) {
-            antwortString.append(frage);
+            answerString.append(frage);
         }
         boolean anyAnswertext = false;
         for (int i = 0;i < answers.length; i++){
+            if(answers[i] == null)
+                continue;
             if(!answers[i].answerText.isEmpty() && !anyAnswertext){
-                antwortString.append(": ");
+                answerString.append(": ");
                 anyAnswertext = true;
             }
-            antwortString.append(answers[i].answerText);
-            antwortString.append(" (").append("\u001B[32m").append(i + 1).append("\u001B[0m").append(") ");
+            answerString.append(answers[i].answerText);
+            answerString.append(" (").append("\u001B[32m").append(i + 1).append("\u001B[0m").append(") ");
         }
-        if(!antwortString.isEmpty()) {
-            if(antwortString.length() > 150){
+        if(!answerString.isEmpty()) {
+            if(answerString.length() > 150){
                 String searchString = ": ";
-                int insertionPoint = antwortString.indexOf(searchString) + searchString.length();
-                antwortString.insert(insertionPoint, "\n");
+                int insertionPoint = answerString.indexOf(searchString) + searchString.length();
+                answerString.insert(insertionPoint, "\n");
             }
-            System.out.println(antwortString);
+            System.out.println(answerString);
         }
         do{
             String c = sc.next();
