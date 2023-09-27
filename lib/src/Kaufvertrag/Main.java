@@ -22,7 +22,4 @@ public class Main {
         }
     }
 
-    public void create(){
-
-    }
 }
