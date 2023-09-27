@@ -170,7 +170,7 @@ public class VertragspartnerDaoXml implements IDao<IVertragspartner, String> {
                             adresse.setOrt(""); return null;
                         }, "Straße (aktueller Wert: "+ adresse.getStrasse() + ")");
 
-                        Object result = ui.ConsoleOptions("Welchen Wert wollen Sie von diesem Vertragspartner aktualisieren?", strasseA, hausNrA, plzA, ortA, abschliessenA);
+                        Object result = ui.ConsoleOptions("Welchen Wert der Adresse wollen Sie aktualisieren?", strasseA, hausNrA, plzA, ortA, abschliessenA);
                         if(result instanceof Boolean){
                             finished2 = (boolean) result;
                         }
