@@ -44,7 +44,7 @@ public class DataLayerManager {
         */
         ConsoleManager ui = ConsoleManager.getInstance();
         ConsoleManager.AnswerOption<String> xmlA = ui.new AnswerOption<>(()-> "xml", "XML");
-        ConsoleManager.AnswerOption<String> sqlA = ui.new AnswerOption<>(()-> "sql" , "Sqlite");
+        ConsoleManager.AnswerOption<String> sqlA = ui.new AnswerOption<>(()-> "sqlite" , "Sqlite");
         return (String) ui.ConsoleOptions("Welche Form der Persistierung möchten Sie Nutzen?", xmlA, sqlA);
     }
 
