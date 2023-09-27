@@ -15,6 +15,7 @@ import java.util.List;
 
 public class DataLayerXml implements IDataLayer {
 
+
     @Override
     public IDao<IVertragspartner, String> getDaoVertragspartner() {
         VertragspartnerDaoXml partnerXmlDao = new VertragspartnerDaoXml();
@@ -108,7 +109,7 @@ public class DataLayerXml implements IDataLayer {
 
             Vertragspartner partner = (Vertragspartner) wareDaoXml.create();
             return  null;
-        }, "Einen neuen Vertragspartner in eine vorhandene Datei einfügen");
+        }, "Eine neue Ware in eine vorhandene Datei einfügen");
 
         //read
 //        ConsoleManager.AnswerOption<Object> readA = ui.new AnswerOption<>(() -> {
@@ -120,7 +121,7 @@ public class DataLayerXml implements IDataLayer {
         ConsoleManager.AnswerOption<Object> updateA = ui.new AnswerOption<>(() -> {
             //partnerXmlDao.update();
             return  null;
-        }, "Einem vorhandenen Vertragspartner aktualisieren");
+        }, "Eine vorhandene Ware aktualisieren");
 
         // delete
         ConsoleManager.AnswerOption<Object> deleteA = ui.new AnswerOption<>(() -> {
