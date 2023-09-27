@@ -94,7 +94,7 @@ public class VertragspartnerDaoSqlite implements IDao<IVertragspartner, String> 
             preparedStatement.executeUpdate();
 
             System.out.println("Daten erfolgreich in die Datenbank eingefügt.");
-        } catch (SQLException | ClassNotFoundException e) {
+        } catch (SQLException /*| ClassNotFoundException */e) {
             throw new RuntimeException(e);
         }
 

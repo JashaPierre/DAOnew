@@ -106,8 +106,14 @@ public class DataLayerXml implements IDataLayer {
 
         //create insert
         ConsoleManager.AnswerOption<Object> creatInsertA = ui.new AnswerOption<>(() -> {
+            var fileList = sXML.getXMLFileList();
+            File openedFile = sXML.chooseXML(fileList);
+            Document doc = sXML.readXMLFile(openedFile);
+            var warenKnoten = sXML.UnterKnotenAuswahlen(doc,"Vertragspartner","Vorname","Welchen Vertragspartner möchten Sie überschreiben?");
+            Ware ware = (Ware) wareDaoXml.parseXMLtoWare(warenKnoten);
+            doc.getRootElement().removeContent(warenKnoten);
 
-            Vertragspartner partner = (Vertragspartner) wareDaoXml.create();
+            wareDaoXml.create(ware);
             return  null;
         }, "Eine neue Ware in eine vorhandene Datei einfügen");
 
@@ -119,13 +125,28 @@ public class DataLayerXml implements IDataLayer {
 
         //update
         ConsoleManager.AnswerOption<Object> updateA = ui.new AnswerOption<>(() -> {
-            //partnerXmlDao.update();
+            List<File> fileList = sXML.getXMLFileList();
+            File openedFile = sXML.chooseXML(fileList);
+            Document doc = sXML.readXMLFile(openedFile);
+
+            Element warenKnoten = sXML.UnterKnotenAuswahlen(doc,"Ware","Bezeichnung","Welchen Ware möchten Sie überarbeiten?");
+            Ware ware = (Ware) wareDaoXml.parseXMLtoWare(warenKnoten);
+            wareDaoXml.update(ware);
+            Element newWarenKnoten = sXML.newXMLWarenknoten(ware);
+            doc.getRootElement().removeContent(warenKnoten);
+            doc.getRootElement().setContent(newWarenKnoten);
+
+            sXML.saveXML(doc, openedFile);
             return  null;
         }, "Eine vorhandene Ware aktualisieren");
 
         // delete
         ConsoleManager.AnswerOption<Object> deleteA = ui.new AnswerOption<>(() -> {
-            wareDaoXml.delete(ui.getScanner().nextLong());
+            List<File> fileList = sXML.getXMLFileList();
+            File openedFile = sXML.chooseXML(fileList, "In welcher Datei möchten Sie einen Knoten löschen?");
+            Document doc = sXML.readXMLFile(openedFile);
+            Element warenKnoten = sXML.UnterKnotenAuswahlen(doc,"Ware","Bezeichnung","Welchen Vertragspartner möchten Sie Löschen?");
+            wareDaoXml.delete(Long.parseLong(warenKnoten.getAttributeValue("id")));
             return null;
         }, "Einem vertragspartner löschen");
         ui.ConsoleOptions("Wie möchten Sie die Ware persistieren?", createA, creatInsertA/*, readA*/, updateA, deleteA);
