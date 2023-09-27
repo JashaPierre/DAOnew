@@ -11,4 +11,15 @@
             <Ort />
         </Adresse>
     </Vertragspartner>
+    <Vertragspartner>
+        <Vorname>Bernd</Vorname>
+        <Nachname>Hans</Nachname>
+        <AusweisNr />
+        <Adresse>
+            <Strasse />
+            <HausNr />
+            <PLZ />
+            <Ort />
+        </Adresse>
+    </Vertragspartner>
 </Vertrag>

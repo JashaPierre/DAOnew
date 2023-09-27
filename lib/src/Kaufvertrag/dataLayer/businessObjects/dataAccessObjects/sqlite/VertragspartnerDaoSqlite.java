@@ -13,7 +13,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Scanner;
 
-public class VertragspartnerDaoSqlite implements IDao { //calls connectManager
+public class VertragspartnerDaoSqlite implements IDao<IVertragspartner, String> { //calls connectManager
 
 
     public IVertragspartner creat() {
@@ -32,11 +32,15 @@ public class VertragspartnerDaoSqlite implements IDao { //calls connectManager
         UIManager.AnswerOption<Object> neinAt = ui.new AnswerOption<>(null, "Nein");
         ui.ConsoleOptions("Möchten Sie dem Vertragspartner eine Ausweisnummer zuweisen?", jaAt, neinAt);
         jaAt = ui.new AnswerOption<>(() -> {
+
             String strasse = ui.returnInput(
                     "Geben Sie einen Straßennamen ein.",
-                    "^[-A-Za-z\\s]*$",
+                    "^[-\\p{L}\\s]*$",
                     "Kein gültiges format für einen Straßennamen."
             );
+            //Connection mit datenbank
+            //Insert into Datenbankt Srtring Strasse
+
             String hausNr = ui.returnInput(
                     "Geben Sie einen Hausnummer ein.",
                     "\\b\\d+\\S*\\b",
@@ -56,7 +60,7 @@ public class VertragspartnerDaoSqlite implements IDao { //calls connectManager
             return null;
         },"Ja");
         neinAt = ui.new AnswerOption<>(null, "Nein");
-        ui.ConsoleOptions("Möchten Sie dem Vertragspartner eine Adresse zuornen?");
+        ui.ConsoleOptions("Möchten Sie dem Vertragspartner eine Adresse zuordnen?", jaAt, neinAt);
         return vertragspartner;
 
         //Connection connection = new ConnectionManager().getNewConnection();
@@ -66,35 +70,34 @@ public class VertragspartnerDaoSqlite implements IDao { //calls connectManager
 
 
     @Override
-    public Object create() {
-
+    public IVertragspartner create() {
         return  null;
     }
 
     @Override
-    public void create(Object objectToInsert) throws DaoException {
+    public void create(IVertragspartner objectToInsert) throws DaoException {
         //iware
     }
 
     @Override
-    public Object read(Object id) throws DaoException {
+    public IVertragspartner read(String id) throws DaoException {
         return null;
         //select auf tabelle genau eins
     }
 
     @Override
-    public List readAll() throws DaoException {
+    public List<IVertragspartner> readAll() throws DaoException {
         return null;
         //select auf tabelle ALLE
     }
 
     @Override
-    public void update(Object objectToUpdate) throws DaoException {
+    public void update(IVertragspartner objectToUpdate) throws DaoException {
 
     }
 
     @Override
-    public void delete(Object id) throws DaoException {
+    public void delete(String id) throws DaoException {
 
     }
 }
