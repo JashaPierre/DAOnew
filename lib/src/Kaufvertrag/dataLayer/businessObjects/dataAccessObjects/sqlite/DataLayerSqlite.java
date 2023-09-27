@@ -28,11 +28,9 @@ public class DataLayerSqlite implements IDataLayer {
             return  null;
         }, "Einen neuen Vertragspartner Erstellen");
         UIManager.AnswerOption<Object> creatInsertAt = ui.new AnswerOption<>(() -> {
-            partnerXmlDao.create();
             return  null;
         }, "Einen neuen Vertragspartner Einfügen");
         UIManager.AnswerOption<Object> readAt = ui.new AnswerOption<>(() -> {
-            partnerXmlDao.read(Main.sc.next());
             return  null;
         }, "Vorhanden Vertragspartner finden");
         UIManager.AnswerOption<Object> updateAt = ui.new AnswerOption<>(() -> {
@@ -40,13 +38,11 @@ public class DataLayerSqlite implements IDataLayer {
             return  null;
         }, "Einem vorhandenen Vertragspartner aktualisieren");
         UIManager.AnswerOption<Object> deleteAt = ui.new AnswerOption<>(() -> {
-            partnerXmlDao.delete(Main.sc.next());
             return null;
         }, "Einem vertragspartner löschen");
 
         // Map<UIManager.AnswerOption<Object>, Object> results
         Object result = UIManager.ConsoleOptions("Wie möchten Sie den Vertragspartner persistieren?", createAt, creatInsertAt, readAt, updateAt, deleteAt);
-        return partnerXmlDao;
 
 
 
