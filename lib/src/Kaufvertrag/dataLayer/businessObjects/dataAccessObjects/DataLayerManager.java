@@ -30,18 +30,6 @@ public class DataLayerManager {
     }
 
     private String readPersistenceType(){
-        //Schritt 1.2
-        /* System.out.println("Welche Form der Persistierung möchten Sie Nutzen? XML (1) oder Sqlite(2)");
-        String type = "";
-        do{
-            switch (Main.sc.next()) {
-                case "1" -> type = "xml";
-                case "2" -> type = "sqlite";
-                default -> System.out.println("Keine gültige Eingabe!");
-            }
-        }while (!type.equals("xml") && !type.equals("sqlite"));
-        return type;
-        */
         ConsoleManager ui = ConsoleManager.getInstance();
         ConsoleManager.AnswerOption<String> xmlA = ui.new AnswerOption<>(()-> "xml", "XML");
         ConsoleManager.AnswerOption<String> sqlA = ui.new AnswerOption<>(()-> "sqlite" , "Sqlite");

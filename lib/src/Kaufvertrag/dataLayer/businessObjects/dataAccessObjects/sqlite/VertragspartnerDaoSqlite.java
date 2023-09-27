@@ -15,10 +15,6 @@ public class VertragspartnerDaoSqlite implements IDao<IVertragspartner, String> 
 
     @Override
     public IVertragspartner create() {
-
-
-
-        //erstellt den Vertragspartner
         ConsoleManager ui = ConsoleManager.getInstance();
 
         System.out.println("Wie lautet der Vorname des Vertragspartners?");
@@ -61,8 +57,8 @@ public class VertragspartnerDaoSqlite implements IDao<IVertragspartner, String> 
         neinAt = ui.new AnswerOption<>(null, "Nein");
         ui.ConsoleOptions("Möchten Sie dem Vertragspartner eine Adresse zuordnen?", jaAt, neinAt);
 
-        Connection connection = null;
-        PreparedStatement preparedStatement = null;
+        Connection connection;
+        PreparedStatement preparedStatement;
 
         try {
             // Verbindung zur SQLite-Datenbank herstellen
@@ -97,41 +93,63 @@ public class VertragspartnerDaoSqlite implements IDao<IVertragspartner, String> 
         } catch (SQLException | ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
-
-
-
-
-
         return vertragspartner;
-
-
     }
 
     @Override
     public void create(IVertragspartner objectToInsert) throws DaoException {
-
-
+        String sql = "SELECT * FROM Vertragspartner WHERE id = ?";
     }
 
     @Override
     public IVertragspartner read(String id) throws DaoException {
         return null;
-        //select auf tabelle genau eins
+        //select auf tabelle genau eins -> Ergibt keinen Sinn dies zu Implementieren.
     }
 
     @Override
     public List<IVertragspartner> readAll() throws DaoException {
+        PreparedStatement preparedStatement = null;
+        Connection connection = connectionManager.getExistingConnection();
+        String readSql = "SELECT * FROM Vertragspartner";
+        try {
+            preparedStatement = connection.prepareStatement(readSql);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
         return null;
-        //select auf tabelle ALLE
+
     }
 
     @Override
     public void update(IVertragspartner objectToUpdate) throws DaoException {
 
+        Connection connection;
+        try {
+            connection = connectionManager.getNewConnection();
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+        String sql = "UPDATE Vertragspartner SET bezeichnung = ?, beschreibung = ?, preis = ?, besonderheiten = ?, maengel = ? WHERE id = ?";
+
+        PreparedStatement preparedStatement = null;
+        try {
+            preparedStatement = connection.prepareStatement(sql);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public void delete(String id) throws DaoException {
+        try (Connection connection = connectionManager.getExistingConnection()) {
+            String sql = "DELETE FROM Vertragspartner WHERE id = ?";
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setString(1, id);
 
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }
