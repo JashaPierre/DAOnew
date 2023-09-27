@@ -16,6 +16,8 @@ public class VertragspartnerDaoSqlite implements IDao<IVertragspartner, String> 
     @Override
     public IVertragspartner create() {
 
+
+
         //erstellt den Vertragspartner
         ConsoleManager ui = ConsoleManager.getInstance();
 
@@ -59,9 +61,6 @@ public class VertragspartnerDaoSqlite implements IDao<IVertragspartner, String> 
         neinAt = ui.new AnswerOption<>(null, "Nein");
         ui.ConsoleOptions("Möchten Sie dem Vertragspartner eine Adresse zuordnen?", jaAt, neinAt);
 
-
-
-
         Connection connection = null;
         PreparedStatement preparedStatement = null;
 
@@ -98,6 +97,9 @@ public class VertragspartnerDaoSqlite implements IDao<IVertragspartner, String> 
         } catch (SQLException | ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
+
+
+
 
 
         return vertragspartner;

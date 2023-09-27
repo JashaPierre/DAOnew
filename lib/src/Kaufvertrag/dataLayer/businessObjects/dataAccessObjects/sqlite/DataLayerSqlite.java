@@ -38,7 +38,7 @@ public class DataLayerSqlite implements IDataLayer {
                 case 1 -> partnerSql = (Vertragspartner) partner.create();
                 //case 3 -> showVertragspartner();
                 //case 4 -> showWare();
-                case 3 -> {
+                case 5 -> {
                     System.out.println("Programm wird beendet.");
                     System.exit(0);
                 }
