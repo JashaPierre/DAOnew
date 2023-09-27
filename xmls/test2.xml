@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Vertrag>
     <Vertragspartner id="0">
-        <Vorname>Bernd</Vorname>
-        <Nachname>Hans</Nachname>
+        <Vorname>Test</Vorname>
+        <Nachname>Peter</Nachname>
         <AusweisNr />
         <Adresse>
             <Strasse />
