@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class VertragspartnerDaoXml implements IDao<IVertragspartner,String> {
+public class VertragspartnerDaoXml implements IDao<IVertragspartner, String> {
 
     /**
      * Erschafft einen neuen Vertragspartner, wenn gewünscht auch zwei und stattet ihn mit den gewünschten Paramtern aus.
@@ -67,10 +67,12 @@ public class VertragspartnerDaoXml implements IDao<IVertragspartner,String> {
     }
 
     /**
-     * Sucht einen Vertragspartner durch die sich im XML befindenden ID
+     * Sucht einen Vertragspartner durch die sich im XML befindenden ID.
+     * Relativ wenig Nutzen, da man alle XMLs laden muss, um mit dem ID parameter etwas suchen zu können
      * */
     @Override
     public IVertragspartner read(String id) throws DaoException {
+        //return parseXMLtoPartner(id);
         ServiceXml sXML = ServiceXml.getInstance();
         if(sXML.getXMLFileList().isEmpty())
             return null;
@@ -107,15 +109,29 @@ public class VertragspartnerDaoXml implements IDao<IVertragspartner,String> {
 
     @Override
     public void update(IVertragspartner objectToUpdate) throws DaoException {
-        //PLACEHOLDER
+        UIManager ui = UIManager.getInstance();
+        var vorname = objectToUpdate.getVorname();
+        var nachname = objectToUpdate.getNachname();
+        var asuweisNr = objectToUpdate.getAusweisNr();
+        var adresse = objectToUpdate.getAdresse();
+
+        var strasse = adresse.getStrasse();
+        var hausNr = adresse.getHausNr();
+        var plz = adresse.getPlz();
+        var ort = adresse.getOrt();
+
+        UIManager.AnswerOption<Object> createA = ui.new AnswerOption(() ->, "");
+
+        ui.ConsoleOptions("Welchen Wert wollen Sie von diesem Vertragspartner aktualisieren?", createA);
+
     }
 
     @Override
     public void delete(String id) throws DaoException {
-        //PLACEHOLDER
+
     }
 
-    private IVertragspartner parseXMLtoPartner(Element partnerNode){
+    public IVertragspartner parseXMLtoPartner(Element partnerNode){
         String vorname = partnerNode.getChild("Vorname").getValue();
         String nachname = partnerNode.getChild("Nachname").getValue();
 

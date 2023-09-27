@@ -7,6 +7,11 @@ import Kaufvertrag.dataLayer.businessObjects.Ware;
 import Kaufvertrag.dataLayer.businessObjects.dataAccessObjects.IDao;
 import Kaufvertrag.dataLayer.businessObjects.dataAccessObjects.IDataLayer;
 import Kaufvertrag.dataLayer.businessObjects.dataAccessObjects.UIManager;
+import Kaufvertrag.dataLayer.businessObjects.dataAccessObjects.sqlite.VertragspartnerDaoSqlite;
+import org.jdom2.Document;
+import org.jdom2.Element;
+
+import java.io.File;
 
 public class DataLayerXml implements IDataLayer {
 
@@ -19,7 +24,6 @@ public class DataLayerXml implements IDataLayer {
         //create
         UIManager.AnswerOption<Object> createA = ui.new AnswerOption<>(() -> {
             Vertragspartner partner1 = (Vertragspartner) partnerXmlDao.create();
-
             UIManager.AnswerOption<Object> jaA = ui.new AnswerOption<>(partnerXmlDao::create, "ja");
             UIManager.AnswerOption<Object> neinA = ui.new AnswerOption<>(null, "nein");
             Vertragspartner partner2 = (Vertragspartner) ui.ConsoleOptions("Für einen Vertrag werden zwei Partner benötigt. Wollen Sie einen weiteren Partner hinzufügen?", jaA, neinA);
@@ -34,34 +38,47 @@ public class DataLayerXml implements IDataLayer {
 
         //create insert
         UIManager.AnswerOption<Object> creatInsertA = ui.new AnswerOption<>(() -> {
-
-            Vertragspartner partner = (Vertragspartner) partnerXmlDao.create();
-
+            var fileList = sXML.getXMLFileList();
+            File openedFile = sXML.chooseXML(fileList);
+            Document doc = sXML.readXMLFile(openedFile);
+            var partnerKnoten = sXML.UnterKnotenAuswahlen(doc,"Vertragspartner","Welchen Vertragspartner möchten Sie lesen?");
+            Vertragspartner altPartner = (Vertragspartner) partnerXmlDao.parseXMLtoPartner(partnerKnoten);
+            //var partnerKnoten = sXML.newXMLVertragspartnerknoten(partner);
+            String id = partnerKnoten.getAttributeValue("id");
+            sXML.saveXML(doc, openedFile);
             return  null;
         }, "Einen neuen Vertragspartner in eine vorhandene Datei einfügen");
 
         //read
-        UIManager.AnswerOption<Object> readA = ui.new AnswerOption<>(() -> {
+        // macht nicht viel sinn. Was soll denn damit gemacht werden?
+        /*UIManager.AnswerOption<Object> readA = ui.new AnswerOption<>(() -> {
             partnerXmlDao.readAll();
             return  null;
-        }, "Vorhanden Vertragspartner finden");
+        }, "Vorhanden Vertragspartner finden");*/
 
 
         //update
         UIManager.AnswerOption<Object> updateA = ui.new AnswerOption<>(() -> {
-            //partnerXmlDao.update();
+            var fileList = sXML.getXMLFileList();
+            File openedFile = sXML.chooseXML(fileList);
+            Document doc = sXML.readXMLFile(openedFile);
+            var partnerKnoten = sXML.UnterKnotenAuswahlen(doc,"Vertragspartner","Welchen Vertragspartner möchten Sie lesen?");
+            Vertragspartner altPartner = (Vertragspartner) partnerXmlDao.parseXMLtoPartner(partnerKnoten);
+            //var partnerKnoten = sXML.newXMLVertragspartnerknoten(partner);
+            String id = partnerKnoten.getAttributeValue("id");
+            sXML.saveXML(doc, openedFile);
             return  null;
         }, "Einem vorhandenen Vertragspartner aktualisieren");
 
         // delete
         UIManager.AnswerOption<Object> deleteA = ui.new AnswerOption<>(() -> {
-            partnerXmlDao.delete(ui.getScanner().next());
+           // partnerXmlDao.delete(ui.getScanner().next());
             return null;
         }, "Einem vertragspartner löschen");
 
         // Map<UIManager.AnswerOption<Object>, Object> results
-        ui.ConsoleOptions("Wie möchten Sie den Vertragspartner persistieren?", createA, creatInsertA, readA, updateA, deleteA);
-        IDao<IVertragspartner, String> result;
+        ui.ConsoleOptions("Wie möchten Sie den Vertragspartner persistieren?", createA, creatInsertA/*, readA*/, updateA, deleteA);
+
         return partnerXmlDao;
     }
 
@@ -83,7 +100,6 @@ public class DataLayerXml implements IDataLayer {
         UIManager.AnswerOption<Object> creatInsertA = ui.new AnswerOption<>(() -> {
 
             Vertragspartner partner = (Vertragspartner) wareDaoXml.create();
-
             return  null;
         }, "Einen neuen Vertragspartner in eine vorhandene Datei einfügen");
 
@@ -92,7 +108,6 @@ public class DataLayerXml implements IDataLayer {
             wareDaoXml.readAll();
             return  null;
         }, "Vorhanden Vertragspartner finden");
-
 
         //update
         UIManager.AnswerOption<Object> updateA = ui.new AnswerOption<>(() -> {

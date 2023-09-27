@@ -63,29 +63,35 @@ import java.util.List;
 
         Path folderPath = checkForXMLsFolder();
         Path filePath = folderPath.resolve(fileName + ".xml");
+        File file = filePath.toFile();
 
-        int count = 0;
-        for (Element element : root.getChildren()){
-            if(element.getAttribute("id") == null)
-                element.setAttribute("id", String.valueOf(count));
-            count++;
-        }
 
-        try{
-            FileOutputStream fileOutputStream = new FileOutputStream(filePath.toFile());
-            Format format = Format.getCompactFormat();
-            format.setIndent("    ");
-            XMLOutputter xmlOutputter = new XMLOutputter(format);
-            xmlOutputter.output(document, fileOutputStream);
-            fileOutputStream.close();
-
-            System.out.println("XML Document gespeichert unter: " + checkForXMLsFolder().toString());
-        }catch (Exception e){
-            e.printStackTrace();
-        }
+        saveXML(document, file);
     }
 
-    /**
+     public void saveXML(Document document, File file) {
+         int count = 0;
+         for (Element element : document.getRootElement().getChildren()){
+             if(element.getAttribute("id") == null)
+                 element.setAttribute("id", String.valueOf(count));
+             count++;
+         }
+
+         try{
+             FileOutputStream fileOutputStream = new FileOutputStream(file);
+             Format format = Format.getCompactFormat();
+             format.setIndent("    ");
+             XMLOutputter xmlOutputter = new XMLOutputter(format);
+             xmlOutputter.output(document, fileOutputStream);
+             fileOutputStream.close();
+
+             System.out.println("XML Document gespeichert unter: " + checkForXMLsFolder().toString());
+         }catch (Exception e){
+             e.printStackTrace();
+         }
+     }
+
+     /**
      * Einen Vertragspartnerknoten hinzufügen
      * */
      public Element newXMLVertragspartnerknoten(Vertragspartner vertragspartner){
@@ -211,7 +217,7 @@ import java.util.List;
 
         if(!xmlFiles.isEmpty()) {
             for(File file : xmlFiles){
-                UIManager.AnswerOption<File> fileA = ui.new AnswerOption<>(() -> file, file.toString());
+                UIManager.AnswerOption<File> fileA = ui.new AnswerOption<>(() -> file, file.getName());
                 listOption.add(fileA);
             }
         }
@@ -220,6 +226,26 @@ import java.util.List;
         UIManager.AnswerOption<File>[] array = new UIManager.AnswerOption[listOption.size()];
         array = listOption.toArray(array);
         return (File) ui.ConsoleOptions("Welche Datei möchten Sie öffnen?", array);
+    }
+
+    public Element UnterKnotenAuswahlen(Document document, String typen, String frage){
+        UIManager ui = UIManager.getInstance();
+        Element root = document.getRootElement();
+        List<UIManager.AnswerOption<Element>> knoten = new ArrayList<>();
+
+        for(var element : root.getChildren()){
+            if(element.getName().equals(typen) && !typen.equals("")){
+                UIManager.AnswerOption<Element> elementA = ui.new AnswerOption<>(() -> element, element.getChild("").getName() +" id: " + element.getAttributeValue("id"));
+                knoten.add(elementA);
+            }
+        }
+
+        @SuppressWarnings("unchecked")
+        UIManager.AnswerOption<Element>[] array = new UIManager.AnswerOption[knoten.size()];
+        array = knoten.toArray(array);
+        if(frage.isBlank())
+            frage = "Welchen Knotenpunkt möchten Sie öffnen?";
+        return (Element) ui.ConsoleOptions(frage, array);
     }
 
      FileFilter xmlFileFilter = new FileFilter() {

@@ -20,6 +20,9 @@ public class Main {
         } catch (DaoException e) {
             e.printStackTrace();
         }
+    }
+
+    public void create(){
 
     }
 }
