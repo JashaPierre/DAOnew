@@ -1,4 +1,4 @@
-package businessObjects;
+package Kaufvertrag.businessObjects;
 
     public interface IAdresse {
         String getStrasse();

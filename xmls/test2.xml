@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Vertrag>
+    <Vertragspartner id="0">
+        <Vorname>Test</Vorname>
+        <Nachname>Peter</Nachname>
+        <AusweisNr />
+        <Adresse>
+            <Strasse />
+            <HausNr />
+            <PLZ />
+            <Ort />
+        </Adresse>
+    </Vertragspartner>
+</Vertrag>

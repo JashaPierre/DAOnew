@@ -1,4 +1,4 @@
-package dataLayer.businessObjects.dataAccessObjects.sqlite;
+package Kaufvertrag.dataLayer.businessObjects.dataAccessObjects.sqlite;
 
 public class WareDaoSqlite {
 }

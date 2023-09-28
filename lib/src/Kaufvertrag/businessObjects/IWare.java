@@ -1,4 +1,4 @@
-package businessObjects;
+package Kaufvertrag.businessObjects;
 
 import java.util.List;
 

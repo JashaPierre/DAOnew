@@ -1,7 +1,8 @@
-package dataLayer.businessObjects;
+package Kaufvertrag.dataLayer.businessObjects;
 
-import businessObjects.IAdresse;
-import businessObjects.IVertragspartner;
+import Kaufvertrag.businessObjects.IAdresse;
+import Kaufvertrag.businessObjects.IVertragspartner;
+import Kaufvertrag.dataLayer.businessObjects.dataAccessObjects.ConsoleManager;
 
 public class Vertragspartner implements IVertragspartner {
     private String vorname;
@@ -15,31 +16,60 @@ public class Vertragspartner implements IVertragspartner {
     }
 
     public String getVorname() {
-        return vorname;
+        if(vorname != null && !vorname.isBlank())
+            return vorname;
+        return null;
     }
-
-    public void setVorname(String vorname) {
-        this.vorname = vorname;
-    }
-
     public String getNachname() {
-        return nachname;
-    }
-
-    public void setNachname(String nachname) {
-        this.nachname = nachname;
+        if(nachname != null && !nachname.isBlank())
+            return nachname;
+        return null;
     }
     @Override
     public String getAusweisNr() {
-        return ausweisNr;
-    }
-    @Override
-    public void setAusweisNr(String ausweisNr) {
-        this.ausweisNr = ausweisNr;
+        if(ausweisNr != null && !ausweisNr.isBlank())
+            return ausweisNr;
+        return null;
     }
     @Override
     public IAdresse getAdresse() {
-        return adresse;
+        if(adresse != null)
+            return adresse;
+        return null;
+    }
+    public void setVorname(String vorname) {
+        if(!vorname.equals(""))
+            this.vorname = vorname;
+        else {
+            ConsoleManager ui = ConsoleManager.getInstance();
+            this.vorname = ui.returnInput(
+                    "Wie lautet der Vorname des Vertragspartners?"
+            );
+        }
+    }
+    public void setNachname(String nachname) {
+        if(!nachname.equals(""))
+            this.nachname = nachname;
+        else {
+            ConsoleManager ui = ConsoleManager.getInstance();
+            this.nachname = ui.returnInput(
+                    "Wie lautet der Nachname des Vertragspartners?"
+            );
+        }
+    }
+
+    @Override
+    public void setAusweisNr(String ausweisNr) {
+        if(!ausweisNr.equals(""))
+            this.ausweisNr = ausweisNr;
+        else {
+            ConsoleManager ui = ConsoleManager.getInstance();
+            this.ausweisNr = ui.returnInput(
+                    "Geben Sie eine gültige Ausweisnummer ein.",
+                    "[A-Z0-9]{6,12}",
+                    "Kein gültiges format für eine Ausweisnummer."
+            );
+        }
     }
     @Override
     public void setAdresse(IAdresse adresse) {
