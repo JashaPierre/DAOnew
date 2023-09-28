@@ -109,14 +109,14 @@ public class VertragspartnerDaoSqlite implements IDao<IVertragspartner, String> 
 
     @Override
     public List<IVertragspartner> readAll() throws DaoException {
-        PreparedStatement preparedStatement = null;
+       /* PreparedStatement preparedStatement = null;
         Connection connection = connectionManager.getExistingConnection();
         String readSql = "SELECT * FROM Vertragspartner";
         try {
             preparedStatement = connection.prepareStatement(readSql);
         } catch (SQLException e) {
             throw new RuntimeException(e);
-        }
+        }*/
         return null;
 
     }
@@ -124,7 +124,7 @@ public class VertragspartnerDaoSqlite implements IDao<IVertragspartner, String> 
     @Override
     public void update(IVertragspartner objectToUpdate) throws DaoException {
 
-        Connection connection;
+       /* Connection connection;
         try {
             connection = connectionManager.getNewConnection();
         } catch (ClassNotFoundException e) {
@@ -137,12 +137,12 @@ public class VertragspartnerDaoSqlite implements IDao<IVertragspartner, String> 
             preparedStatement = connection.prepareStatement(sql);
         } catch (SQLException e) {
             throw new RuntimeException(e);
-        }
+        }*/
     }
 
     @Override
     public void delete(String id) throws DaoException {
-        try (Connection connection = connectionManager.getExistingConnection()) {
+        /*try (Connection connection = connectionManager.getExistingConnection()) {
             String sql = "DELETE FROM Vertragspartner WHERE id = ?";
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setString(1, id);
@@ -150,6 +150,6 @@ public class VertragspartnerDaoSqlite implements IDao<IVertragspartner, String> 
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
-        }
+        }*/
     }
 }
