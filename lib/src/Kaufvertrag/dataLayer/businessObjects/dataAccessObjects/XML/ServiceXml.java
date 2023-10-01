@@ -230,7 +230,7 @@ public class ServiceXml {
                      int idMAxValue = (int) Math.pow(10, lenght) - 1;
                      Random random = new Random();
                      randomVal =  random.nextInt(idMAxValue);
-                     var file = idSeachAllXml("", Integer.toString(randomVal));
+                     var file = idSearchAllXml("", Integer.toString(randomVal));
                      if(file.element == null)
                          break;
                  }
@@ -239,12 +239,12 @@ public class ServiceXml {
          }
      }
 
-    public JdomFile idSeachAllXml(String nodeName, String id){
+    public JdomFile idSearchAllXml(String nodeName, String id){
         var fileList = getXMLFileList();
         for(var file :fileList){
             Document doc = readXMLFile(file);
-            Element ele = searchRecursively(doc.getRootElement(),true, nodeName,"id", id);
-            return new JdomFile(ele, file);
+            Element element = searchRecursively(doc.getRootElement(),true, nodeName,"id", id);
+            return new JdomFile(element, file);
         }
         return null;
     }
@@ -257,7 +257,7 @@ public class ServiceXml {
          }
          else {
              if ((element.getName().equals(nodeName) && element.getValue().equals(value))
-              || (nodeName.equals("") && element.getValue().equals(value)))
+              || (element.getName().equals(nodeName) && value.equals("")))
                  return element;
          }
          for (Element child : element.getChildren()) {
@@ -291,15 +291,15 @@ public class ServiceXml {
         array = listOption.toArray(array);
         if(frage.equals(""))
             frage = "Welche Datei möchten Sie öffnen? ";
-        return (File) ui.ConsoleOptions(frage, array);
+        Object result = ui.ConsoleOptions(frage, array);
+        if(result instanceof File file)
+            return file;
+        else
+            return null;
     }
 
     private boolean xmlFileContainsName (File file, String name){
-        for(var child : readXMLFile(file).getRootElement().getChildren()){
-            if (child.getName().equals(name))
-                return true;
-        }
-        return false;
+        return searchRecursively(readXMLFile(file).getRootElement(), false, name, "", "") != null;
     }
 
     public Element UnterKnotenAuswahlen(Document document, String typen, String tyeChild, String frage){

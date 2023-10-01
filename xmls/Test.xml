@@ -1,2 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Vertrag/>
+<Vertrag>
+    <Vertragspartner id="95312073">
+        <Vorname>Peter</Vorname>
+        <Nachname>Pan</Nachname>
+        <AusweisNr>T23123123</AusweisNr>
+        <Adresse>
+            <Strasse>23131</Strasse>
+            <HausNr />
+            <PLZ />
+            <Ort />
+        </Adresse>
+    </Vertragspartner>
+    <Vertragspartner id="42242133">
+        <Vorname>Peter</Vorname>
+        <Nachname>Pan</Nachname>
+        <AusweisNr>T23123123</AusweisNr>
+        <Adresse>
+            <Strasse>28218</Strasse>
+            <HausNr />
+            <PLZ />
+            <Ort />
+        </Adresse>
+    </Vertragspartner>
+</Vertrag>

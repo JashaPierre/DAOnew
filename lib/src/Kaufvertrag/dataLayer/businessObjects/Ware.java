@@ -73,13 +73,7 @@ public class Ware implements IWare {
 
     @Override
     public String toString() {
-        String text = "\n\t\tBezeichnung: " + bezeichnung;
-        text += "\n\t\tBeschreibung: " + beschreibung;
-        text += "\n\t\tPreis: " + preis;
-        text += "\n\t\tBesonderheiten: " + besonderheitenListe;
-        text += "\n\t\tMängel: " + maengelListe;
-        text += "\n";
-        return text;
+        return bezeichnung + ", ID: " + getId();
     }
 
     private Long genrateID(){

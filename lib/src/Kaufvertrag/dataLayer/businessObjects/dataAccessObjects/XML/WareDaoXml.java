@@ -245,7 +245,7 @@ public class WareDaoXml implements IDao<IWare, Long> {
     @Override
     public void delete(Long id) throws DaoException {
         ServiceXml sXML = ServiceXml.getInstance();
-        var jdFile = sXML.idSeachAllXml("Ware", Long.toString(id));
+        var jdFile = sXML.idSearchAllXml("Ware", Long.toString(id));
         Element warenKnoten = jdFile.element;
         File file = jdFile.file;
         Element root = warenKnoten.getDocument().getRootElement();

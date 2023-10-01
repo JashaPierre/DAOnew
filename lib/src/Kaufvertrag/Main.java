@@ -83,7 +83,7 @@ public class Main {
                     return null;
                 }, "Eine Ware");
 
-                Object result = ui.ConsoleOptions("Was möchten Sie persistieren?",false, partnerAt, wareAt);
+                Object result = ui.ConsoleOptions("Was möchten Sie persistieren?", partnerAt, wareAt);
                 if (result instanceof Boolean && (!((boolean) result))) {
                     break;
                 }
@@ -143,7 +143,7 @@ public class Main {
         try {
             List<IVertragspartner> partnerList = daoPartner.readAll();
             if(partnerList.isEmpty()){
-                System.out.println("Konnte keinen Vertragspartner zum überschreiben finden!");
+                System.out.println("Konnte keinen Vertragspartner zum überarbeiten finden!");
                 return;
             }
             Object result = makeAnswerList(partnerList, "Welchen Vertragspartner möchten Sie überarbeiten?");
@@ -160,7 +160,7 @@ public class Main {
         try {
             List<IVertragspartner> partnerList = daoPartner.readAll();
             if(partnerList.isEmpty()){
-                System.out.println("Konnte keinen Vertragspartner zum überschreiben finden!");
+                System.out.println("Konnte keinen Vertragspartner zum löschen finden!");
                 return;
             }
             Object result = makeAnswerList(partnerList, "Welchen Vertragspartner möchten Sie löschen?");
@@ -251,7 +251,7 @@ public class Main {
     private static <T> String getId(IDataLayer layer, String type, String id){
         if(layer instanceof DataLayerXml){
             ServiceXml sXML = ServiceXml.getInstance();
-            sXML.idSeachAllXml(type, id);
+            sXML.idSearchAllXml(type, id);
         }
         else if (layer instanceof DataLayerSqlite) {
 

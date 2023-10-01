@@ -18,24 +18,22 @@ public class Vertragspartner implements IVertragspartner {
     public String getVorname() {
         if(vorname != null && !vorname.isBlank())
             return vorname;
-        return null;
+        return "null";
     }
     public String getNachname() {
         if(nachname != null && !nachname.isBlank())
             return nachname;
-        return null;
+        return "null";
     }
     @Override
     public String getAusweisNr() {
         if(ausweisNr != null && !ausweisNr.isBlank())
             return ausweisNr;
-        return null;
+        return "null";
     }
     @Override
     public IAdresse getAdresse() {
-        if(adresse != null)
-            return adresse;
-        return null;
+         return adresse;
     }
     public void setVorname(String vorname) {
         if(!vorname.equals(""))
@@ -80,9 +78,8 @@ public class Vertragspartner implements IVertragspartner {
     @Override
     public String toString() {
         String text = vorname + " " + nachname;
-        text += "\n\t\tAusweisNr: " + ausweisNr;
-        text += "\n\t\tAdresse: " + adresse;
-        text += "\n";
+        text += ", AusweisNr: " + ausweisNr;
+        text += ", Adresse: " + adresse;
         return text;
     }
 
