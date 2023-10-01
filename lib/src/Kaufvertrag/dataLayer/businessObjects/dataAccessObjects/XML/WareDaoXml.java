@@ -78,18 +78,27 @@ public class WareDaoXml implements IDao<IWare, Long> {
 
     @Override
     public void create(IWare objectToInsert) throws DaoException {
+        ConsoleManager ui = ConsoleManager.getInstance();
         ServiceXml sXML = ServiceXml.getInstance();
-        Object[] docAndFile = sXML.nameSeachAllXml(objectToInsert.getBezeichnung());
-        Element oldPartnerknoten = (Element) docAndFile[0];
-        File file = (File) docAndFile[1];
-        Element root = oldPartnerknoten.getParentElement();
-        objectToInsert = create();
-        Element newPartnerKnoten = sXML.newXMLWarenknoten((Ware) objectToInsert);
 
-        root.setContent(newPartnerKnoten);
-        root.removeContent(oldPartnerknoten);
+        ConsoleManager.AnswerOption<String> vorhandenA = ui.new AnswerOption<>(()-> {
+            File file = sXML.chooseXML(sXML.getXMLFileList(),"Vertrag");
+            Document doc = sXML.readXMLFile(file);
+            Element root = doc.getRootElement();
 
-        sXML.saveXML(root.getDocument(), file);
+            Element newWarenknoten = sXML.newXMLWarenknoten(objectToInsert);
+            root.setContent(newWarenknoten);
+            sXML.saveXML(doc, file);
+            return null;
+        }, "Vorhandenem hinzufügen");
+
+        ConsoleManager.AnswerOption<String> neuA = ui.new AnswerOption<>(()-> {
+            String fileName = ui.returnInput("Wie soll das neue XML heißen?");
+            sXML.newXML(fileName, "Vertrag", sXML.newXMLWarenknoten(objectToInsert));
+            return null;
+        }, "Neu erstellen");
+
+        ui.ConsoleOptions("Wollen Sie die Ware einem vorhandenen oder einem neuem XML hinzufügen", vorhandenA, neuA);
     }
 
     @Override
@@ -128,6 +137,9 @@ public class WareDaoXml implements IDao<IWare, Long> {
     @Override
     public void update(IWare objectToUpdate) throws DaoException {
         ConsoleManager ui = ConsoleManager.getInstance();
+        ServiceXml sXML = ServiceXml.getInstance();
+
+        IWare updatedWare = null;
 
         boolean finished = false;
         while (!finished){
@@ -216,19 +228,28 @@ public class WareDaoXml implements IDao<IWare, Long> {
             if(result instanceof Boolean){
                 finished = (boolean) result;
             }
+            if(result instanceof IWare) {
+                updatedWare = (IWare) result;
+            }
+            if(updatedWare != null){
+                List<File> fileList = sXML.getXMLFileList();
+                File openedFile = sXML.chooseXML(fileList, "Vertrag");
+                Document doc = sXML.readXMLFile(openedFile);
+
+                Element newPartnerKnoten = sXML.newXMLWarenknoten(updatedWare);
+                doc.getRootElement().setContent(newPartnerKnoten);
+            }
         }
     }
 
     @Override
     public void delete(Long id) throws DaoException {
         ServiceXml sXML = ServiceXml.getInstance();
-        Object[] docAndFile = sXML.idSeachAllXml(Long.toString(id));
-        Element warenKnoten = (Element) docAndFile[0];
-        File file = (File) docAndFile[1];
-        Element root = warenKnoten.getParentElement();
-
+        var jdFile = sXML.idSeachAllXml("Ware", Long.toString(id));
+        Element warenKnoten = jdFile.element;
+        File file = jdFile.file;
+        Element root = warenKnoten.getDocument().getRootElement();
         root.removeContent(warenKnoten);
-
         sXML.saveXML(root.getDocument(), file);
     }
 

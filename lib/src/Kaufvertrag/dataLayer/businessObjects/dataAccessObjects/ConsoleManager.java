@@ -34,14 +34,19 @@ public class ConsoleManager {
     }
 
     public Object ConsoleOptions(String frage, AnswerOption<?>... answers){
+        return ConsoleOptions(frage,true, answers);
+    }
+    public Object ConsoleOptions(String frage, boolean cancelOption, AnswerOption<?>... answers){
         StringBuilder answerString = new StringBuilder();
         if(!frage.equals("")) {
             answerString.append(frage);
         }
         boolean anyAnswertext = false;
         for (int i = 0;i < answers.length; i++){
-            if(answers[i] == null)
+            if(answers[i] == null){
+                i--;
                 continue;
+            }
             if(!answers[i].answerText.isEmpty() && !anyAnswertext){
                 answerString.append(": ");
                 anyAnswertext = true;
@@ -50,6 +55,10 @@ public class ConsoleManager {
             answerString.append(" (").append("\u001B[32m").append(i + 1).append("\u001B[0m").append(") ");
         }
         if(!answerString.isEmpty()) {
+            if(cancelOption){
+                answerString.append(" Abbrechen");
+                answerString.append(" (").append("\u001B[31m").append(answers.length + 1).append("\u001B[0m").append(") ");
+            }
             if(answerString.length() > 150){
                 String searchString = ": ";
                 int insertionPoint = answerString.indexOf(searchString) + searchString.length();
@@ -64,9 +73,16 @@ public class ConsoleManager {
                 if(answers[choice-1] != null){
                     return answers[choice-1].executeCallable();
                 }
+                else
+                    System.out.println("\"" +c+ "\" war Keine gültige Eingabe!" );
             }catch (Exception e){
                 if(e instanceof IndexOutOfBoundsException) {
-                    System.out.println("\"" +c+ "\"  als option nicht vorhanden!");
+                    if(c.equals(Integer.toString(answers.length + 1)) && cancelOption){
+                        return false;
+                    }
+                    else{
+                         System.out.println("\"" +c+ "\"  als option nicht vorhanden!");
+                    }
                 }
                 else {
                     System.out.println("\"" +c+ "\" war Keine gültige Eingabe!" );
@@ -97,7 +113,6 @@ public class ConsoleManager {
         while (true) {
             do {
                 input = sc.nextLine();
-
             } while (input.isBlank());
 
             if (input.matches(format) || !useFormat) {
@@ -122,12 +137,12 @@ public class ConsoleManager {
         private final String answerText;
         private final Callable<T> callable;
         public AnswerOption(Callable<T> callable) {
-            this.answerText = "";
             this.callable = callable;
+            this.answerText = "";
         }
         public AnswerOption(Callable<T> callable, String answerText) {
-            this.answerText = answerText;
             this.callable = callable;
+            this.answerText = answerText;
         }
 
         public T executeCallable() {

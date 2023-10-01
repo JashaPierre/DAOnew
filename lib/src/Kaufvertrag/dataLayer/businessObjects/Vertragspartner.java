@@ -86,4 +86,5 @@ public class Vertragspartner implements IVertragspartner {
         return text;
     }
 
+
 }

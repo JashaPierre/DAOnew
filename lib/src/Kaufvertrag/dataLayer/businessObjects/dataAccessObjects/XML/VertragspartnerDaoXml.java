@@ -17,7 +17,7 @@ import java.util.Optional;
 public class VertragspartnerDaoXml implements IDao<IVertragspartner, String> {
 
     /**
-     * Erschafft einen neuen Vertragspartner, wenn gewünscht auch zwei und stattet ihn mit den gewünschten Paramtern aus.
+     * Erschafft einen neuen Vertragspartner, wenn gewünscht auch zwei und stattet ihn mit den gewünschten Parametern aus.
      * */
     @Override
     public IVertragspartner create() {
@@ -64,22 +64,31 @@ public class VertragspartnerDaoXml implements IDao<IVertragspartner, String> {
     }
 
     /**
-     * Sucht recursive nach dem gleichen Namen des übergebenen Vertragspartnerobjektes und gibt es wieder zurück.
+     * Persistiert den gewünschten Vertragspartner im XML.
      */
     @Override
     public void create(IVertragspartner objectToInsert) throws DaoException {
+        ConsoleManager ui = ConsoleManager.getInstance();
         ServiceXml sXML = ServiceXml.getInstance();
-        Object[] docAndFile = sXML.nameSeachAllXml(objectToInsert.getVorname());
-        Element oldPartnerknoten = (Element) docAndFile[0];
-        File file = (File) docAndFile[1];
-        Element root = oldPartnerknoten.getParentElement();
-        objectToInsert = create();
-        Element newPartnerKnoten = sXML.newXMLVertragspartnerknoten((Vertragspartner) objectToInsert);
 
-        root.setContent(newPartnerKnoten);
-        root.removeContent(oldPartnerknoten);
+        ConsoleManager.AnswerOption<String> vorhandenA = ui.new AnswerOption<>(()-> {
+            File file = sXML.chooseXML(sXML.getXMLFileList(),"Vertrag");
+            Document doc = sXML.readXMLFile(file);
+            Element root = doc.getRootElement();
 
-        sXML.saveXML(root.getDocument(), file);
+            Element newPartnerKnoten = sXML.newXMLVertragspartnerknoten(objectToInsert);
+            root.setContent(newPartnerKnoten);
+            sXML.saveXML(doc, file);
+            return null;
+        }, "Vorhandenem hinzufügen");
+
+        ConsoleManager.AnswerOption<String> neuA = ui.new AnswerOption<>(()-> {
+            String fileName = ui.returnInput("Wie soll das neue XML heißen?");
+            sXML.newXML(fileName, "Vertrag", sXML.newXMLVertragspartnerknoten(objectToInsert));
+            return null;
+        }, "Neu erstellen");
+
+        ui.ConsoleOptions("Wollen Sie den Vertragspartner einem vorhandenen oder einem neuem XML hinzufügen", vorhandenA, neuA);
     }
 
     /**
@@ -116,7 +125,7 @@ public class VertragspartnerDaoXml implements IDao<IVertragspartner, String> {
            Element root = doc.getRootElement();
            if(root.getChild("Vertragspartner") != null){
                Element partnerNode = root.getChild("Vertragspartner");
-               partnerList.add(this.parseXMLtoPartner(partnerNode));
+               partnerList.add(parseXMLtoPartner(partnerNode));
            }
         }
         return partnerList;
@@ -125,7 +134,10 @@ public class VertragspartnerDaoXml implements IDao<IVertragspartner, String> {
     @Override
     public void update(IVertragspartner objectToUpdate) throws DaoException {
         ConsoleManager ui = ConsoleManager.getInstance();
+        ServiceXml sXML = ServiceXml.getInstance();
         Adresse adresse = (Adresse) objectToUpdate.getAdresse();
+
+        IVertragspartner updatedPartner = null;
 
         boolean finished = false;
         while(!finished){
@@ -181,24 +193,39 @@ public class VertragspartnerDaoXml implements IDao<IVertragspartner, String> {
 
 
             Object result = ui.ConsoleOptions("Welchen Wert wollen Sie von diesem Vertragspartner aktualisieren?", vornamenA, nachnameA, ausweisNrA, adresseA, abschliessenA);
+            if(result instanceof IVertragspartner) {
+                updatedPartner = (IVertragspartner) result;
+            }
             if(result instanceof Boolean){
                 finished = (boolean) result;
             }
+
+            if(updatedPartner != null){
+                List<File> fileList = sXML.getXMLFileList();
+                File openedFile = sXML.chooseXML(fileList, "Vertrag");
+                Document doc = sXML.readXMLFile(openedFile);
+
+                Element newPartnerKnoten = sXML.newXMLVertragspartnerknoten(updatedPartner);
+                doc.getRootElement().setContent(newPartnerKnoten);
+            }
         }
     }
+    /**
+     * Entfernt den Knotenpunkt im XML anhand der übergebenen ID
+     * */
 
     @Override
     public void delete(String id) throws DaoException {
         ServiceXml sXML = ServiceXml.getInstance();
-        Object[] docAndFile = sXML.idSeachAllXml(id);
-        Element partnerKnoten = (Element) docAndFile[0];
-        File file = (File) docAndFile[1];
-        Element root = partnerKnoten.getParentElement();
-
+        var jdFile = sXML.idSeachAllXml("Vertragspartner",id);
+        Element partnerKnoten = jdFile.element;
+        File file = jdFile.file;
+        Element root = partnerKnoten.getDocument().getRootElement();
         root.removeContent(partnerKnoten);
-
         sXML.saveXML(root.getDocument(), file);
     }
+
+
 
     /**
      * Übergibt ein Vertragspartnerknotenelement und baut einen neuen Vertragspartner daraus.

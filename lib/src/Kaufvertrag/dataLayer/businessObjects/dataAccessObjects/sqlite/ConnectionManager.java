@@ -1,98 +1,78 @@
 package Kaufvertrag.dataLayer.businessObjects.dataAccessObjects.sqlite;
 
 
-import java.sql.*;
+import Kaufvertrag.Main;
+
+import java.io.File;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 public class ConnectionManager {
 
-    final private static String className = "org.sqlite.JDBC";
-    final private static String url = "jdbc:sqlite:sqlite.db";
-//    private final File databaseFile = new File("my_database.db"); // Adjust the file name
-//    boolean databaseExists = databaseFile.exists();
-    private static Connection connection;
-
-    public Connection connectToDatabase(){
-        try {
-            // Register the SQLite JDBC driver
-            Class.forName(className);
-            // Create a connection to the database or open the existing one
-            return connection = DriverManager.getConnection(url);
-
-           /* if (!databaseExists) {
-                connection.close();
-                System.out.println("Neue Database erstellt und initialisiert.");
-            }*/
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    public void createNewDatabase (Connection connection){
-
-    }
-
-
-    public Connection getNewConnection() {
-
-        // Datenbankklasse dynamisch erzeugen.
-        /*try {
-            loadClass();
-        } catch (DaoException e) {
-            throw new RuntimeException(e);
-        }*/
-
-        // Verbindung initialisieren.
-        String datei = "sqlite.db";  //Dateiname inklusive Pfad.
-        String url = "jdbc:sqlite:sqlite.db" + datei;
-        // Verbindung aufbauen.
-        try {
-            connection = DriverManager.getConnection(url);
-            String createAdresseTableSQL = "CREATE TABLE IF NOT EXISTS Adresse (" +
-                    "Id INTEGER PRIMARY KEY AUTOINCREMENT," +
-                    "Strasse TEXT," +
-                    "Stadt TEXT," +
-                    "Plz TEXT" +
-                    ")";
-            connection.createStatement().execute(createAdresseTableSQL);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-
-            try {
-            String createVertragspartnerTableSQL = "CREATE TABLE IF NOT EXISTS Vertragspartner (" +
-                    "Id INTEGER PRIMARY KEY AUTOINCREMENT," +
-                    "Vorname TEXT," +
-                    "Nachname TEXT," +
-                    "Ausweisnr TEXT," +
-                    "Adresse_Id INTEGER," + // Fremdschlüssel auf die "adresse" Tabelle
-                    "FOREIGN KEY (Adresse_Id) REFERENCES Adresse(Id)" +
-                    ")";
-            connection.createStatement().execute(createVertragspartnerTableSQL);
-            }  catch (SQLException e) {
-                throw new RuntimeException(e);
+        // JDBC driver name and database URL
+        private static ConnectionManager instance;
+        static final String JDBC_DRIVER = "org.sqlite.JDBC";
+        static final String URL = "jdbc:sqlite:" + Main.PROJECTPATH + "\\sqlite.db";
+        private static Connection connection;
+        private ConnectionManager(){}
+        public static ConnectionManager getInstance(){
+            if(instance == null){
+                return instance = new ConnectionManager();
             }
-            return connection;
-    }
+            return instance;
+        }
 
-   /* public Connection getExistingConnection() {
-        if(connection != null) return connection;
-        else {
+        public Connection getConnection(){
+            if(connection == null){
+                connection = connectToDatabase();
+            }
+            return  connection;
+        }
+
+        private Connection connectToDatabase(){
+            File dbFile = new File(Main.PROJECTPATH + "\\sqlite.db");
+            Connection conn = null;
             try {
-                return getNewConnection();
-            } catch (ClassNotFoundException e) {
-                throw new RuntimeException(e);
+                if (dbFile.exists()) {
+                    Class.forName(JDBC_DRIVER);
+                    conn = DriverManager.getConnection(URL);
+                } else {
+                    createNewConnection(dbFile);
+                }
+                } catch(SQLException e){
+                    System.err.println("Error connecting to SQLite database: " + e.getMessage());
+                } catch(ClassNotFoundException e){
+                    System.err.println("JDBC driver not found");
+                }
+            return conn;
+        }
+
+        public void createNewConnection(File dbFile){
+            try {
+                try {
+                    boolean created = dbFile.createNewFile();
+                    if (created) {
+                        System.out.println(dbFile.getName() + "Successfully created.");
+                    }
+                } catch (IOException e) {
+                    System.err.println("Error creating SQLight Database: " + e.getMessage());
+                }
+                Connection conn = DriverManager.getConnection(URL);
+                Statement stmt = conn.createStatement();
+
+                String createTableSQL =
+                        "CREATE TABLE IF NOT EXISTS " +
+                                "mytable (id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                                "name TEXT, age INTEGER)";
+                stmt.execute(createTableSQL);
+            }
+            catch(SQLException e){
+                System.err.println("Error connecting to SQLite database: " + e.getMessage());
             }
         }
-    }*/
-
-    public void close(ResultSet resultSet, Statement statement, Connection connection){
-        resultSet = null;
-        statement = null;
-        connection = null;
-    }
 
 
 }

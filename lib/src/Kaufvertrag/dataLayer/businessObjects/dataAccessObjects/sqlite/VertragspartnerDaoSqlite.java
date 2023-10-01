@@ -11,7 +11,7 @@ import java.sql.*;
 import java.util.List;
 
 public class VertragspartnerDaoSqlite implements IDao<IVertragspartner, String> { //calls connectManager
-    ConnectionManager connectionManager = new ConnectionManager();
+    ConnectionManager cM = ConnectionManager.getInstance();
 
     @Override
     public IVertragspartner create() {
@@ -62,7 +62,7 @@ public class VertragspartnerDaoSqlite implements IDao<IVertragspartner, String> 
 
         try {
             // Verbindung zur SQLite-Datenbank herstellen
-            connection = connectionManager.getNewConnection();
+            connection = cM.getConnection();
 
             // SQL-Statement zum Einfügen der Daten
             String insertSQL = "INSERT INTO Vertragspartner (ausweisNr, vorname, nachname, strasse, hausNr, plz, ort) VALUES (?, ?, ?, ?, ?, ?, ?)";
