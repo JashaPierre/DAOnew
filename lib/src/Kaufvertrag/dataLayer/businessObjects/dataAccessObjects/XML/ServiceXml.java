@@ -109,9 +109,9 @@ public class ServiceXml {
          Element ort = new Element("Ort");
          if(vertragspartner.getAdresse() != null){
             strasse.setText(vertragspartner.getAdresse().getStrasse());
-            strasse.setText(vertragspartner.getAdresse().getHausNr());
-            strasse.setText(vertragspartner.getAdresse().getOrt());
-            strasse.setText(vertragspartner.getAdresse().getPlz());
+            hausNr.setText(vertragspartner.getAdresse().getHausNr());
+            plz.setText(vertragspartner.getAdresse().getOrt());
+            ort.setText(vertragspartner.getAdresse().getPlz());
          }
 
          adresse.addContent(strasse);
@@ -129,37 +129,42 @@ public class ServiceXml {
      /**
       * Einen Warenknoten hinzufügen
       * */
-    public Element newXMLWarenknoten(IWare ware){
-        Element warenElement = new Element("Ware");
-        Attribute attr = new Attribute("id", Long.toString(ware.getId()));
-        warenElement.setAttribute(attr);
-
+    public Element newXMLWarenknoten(IWare iWare){
+        Element ware = new Element("Ware");
+        Attribute attr = new Attribute("id", Long.toString(iWare.getId()));
+        ware.setAttribute(attr);
 
         Element bezeichnung = new Element("Bezeichnung");
         Element beschreibung = new Element("Beschreibung");
         Element ID = new Element("ID");
         Element preis = new Element("Preis");
 
-        bezeichnung.setText(ware.getBezeichnung());
-        beschreibung.setText(ware.getBeschreibung());
-        ID.setText(Long.toString(ware.getId()));
-        preis.setText(Double.toString(ware.getPreis()));
-
+        bezeichnung.setText(iWare.getBezeichnung());
+        beschreibung.setText(iWare.getBeschreibung());
+        ID.setText(Long.toString(iWare.getId()));
+        preis.setText(Double.toString(iWare.getPreis()));
 
         Element besonderheiten = new Element("Besonderheiten");
-        for (var besonderheit : ware.getBesonderheiten()){
+        for (var besonderheit : iWare.getBesonderheiten()){
             Element element = new Element("li");
             element.setText(besonderheit);
-            besonderheiten.setContent(element);
+            besonderheiten.addContent(element);
         }
         Element maengel = new Element("Maengel");
-        for (var mangel : ware.getMaengel()){
+        for (var mangel : iWare.getMaengel()){
             Element element = new Element("li");
             element.setText(mangel);
-            maengel.setContent(element);
+            maengel.addContent(element);
         }
 
-        return warenElement;
+        ware.addContent(bezeichnung);
+        ware.addContent(beschreibung);
+        ware.addContent(ID);
+        ware.addContent(preis);
+        ware.addContent(besonderheiten);
+        ware.addContent(maengel);
+
+        return ware;
     }
      public void addNodesToXML(Document file, Element[]... elements){
          try{

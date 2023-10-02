@@ -41,18 +41,19 @@ public class WareDaoXml implements IDao<IWare, Long> {
             ware.setBeschreibung(bez);
             return null;}, "Ja");
         ConsoleManager.AnswerOption<Object> neinA = ui.new AnswerOption<>(null, "Nein");
-        ui.ConsoleOptions("Möchten Sie der Ware eine Beschreibung hinzufügen?", jaA, neinA);
+        ui.ConsoleOptions("Möchten Sie der Ware eine Beschreibung hinzufügen?",false, jaA, neinA);
 
         //Frage ob Besondehieten hinzuefügt werden sollen
 
        jaA = ui.new AnswerOption<>(() ->{
-           boolean finished = false;
-           while(!finished){
+           while(true){
                String bes = ui.returnInput("Geben Sie eine Besonderheit an.");
                ware.getBesonderheiten().add(bes);
-               ConsoleManager.AnswerOption<Object> jaA2 = ui.new AnswerOption<>(() -> false ,"ja");
-               ConsoleManager.AnswerOption<Boolean> neinA2 = ui.new AnswerOption<>(() -> true ,"nein");
-               finished = (Boolean) ui.ConsoleOptions("Wollen Sie der Ware eine weiter Besonderheit geben?", jaA2, neinA2);
+               ConsoleManager.AnswerOption<Object> jaA2 = ui.new AnswerOption<>(() -> null ,"ja");
+               ConsoleManager.AnswerOption<Boolean> neinA2 = ui.new AnswerOption<>(() -> false ,"nein");
+               Object result = ui.ConsoleOptions("Wollen Sie der Ware eine weiter Besonderheit geben?",false, jaA2, neinA2);
+               if(result instanceof Boolean && (!(boolean) result))
+                   break;
            }
             return null;
            }, "Ja");
@@ -61,13 +62,14 @@ public class WareDaoXml implements IDao<IWare, Long> {
 
         //Frage ob Mängel hinzugefügt werden sollen
         jaA = ui.new AnswerOption<>(() ->{
-            boolean finished = false;
-            while(!finished){
+            while(true){
                 String man = ui.returnInput("Geben Sie einen Mangel an.");
                 ware.getMaengel().add(man);
-                ConsoleManager.AnswerOption<Object> jaA2 = ui.new AnswerOption<>(() -> false ,"ja");
-                ConsoleManager.AnswerOption<Boolean> neinA2 = ui.new AnswerOption<>(() -> true ,"nein");
-                finished = (Boolean) ui.ConsoleOptions("Wollen Sie der Ware eine weiter Besonderheit geben?", jaA2, neinA2);
+                ConsoleManager.AnswerOption<Object> jaA2 = ui.new AnswerOption<>(() -> null ,"ja");
+                ConsoleManager.AnswerOption<Boolean> neinA2 = ui.new AnswerOption<>(() -> false ,"nein");
+                Object result = ui.ConsoleOptions("Wollen Sie der Ware einen weiteren Mangel hinzufügen?",false, jaA2, neinA2);
+                if(result instanceof Boolean && (!(boolean) result))
+                    break;
             }
             return null;
         }, "Ja");
@@ -88,7 +90,7 @@ public class WareDaoXml implements IDao<IWare, Long> {
             Element root = doc.getRootElement();
 
             Element newWarenknoten = sXML.newXMLWarenknoten(objectToInsert);
-            root.setContent(newWarenknoten);
+            root.addContent(newWarenknoten);
             sXML.saveXML(doc, file);
             return null;
         }, "Vorhandenem hinzufügen");
@@ -120,19 +122,22 @@ public class WareDaoXml implements IDao<IWare, Long> {
 
     @Override
     public List<IWare> readAll() throws DaoException {
-        List<IWare> partnerList = new ArrayList<>();
+        List<IWare> warenListe = new ArrayList<>();
         ServiceXml sXML = ServiceXml.getInstance();
         if(sXML.getXMLFileList().isEmpty())
             return null;
         for (File file : sXML.getXMLFileList()){
             Document doc = sXML.readXMLFile(file);
             Element root = doc.getRootElement();
-            if(root.getChild("Ware") != null){
-                Element warenKnoten = root.getChild("Ware");
-                partnerList.add(parseXMLtoWare(warenKnoten));
+            for(var child : root.getChildren()){
+                if(child.getName().equals("Ware")) {
+                    Element partnerNode = root.getChild("Ware");
+                    IWare ware = parseXMLtoWare(partnerNode);
+                    warenListe.add(ware);
+                }
             }
         }
-        return partnerList;
+        return warenListe;
     }
 
     @Override
@@ -142,9 +147,7 @@ public class WareDaoXml implements IDao<IWare, Long> {
 
         IWare updatedWare = null;
 
-        boolean finished = false;
-        while (!finished){
-            ConsoleManager.AnswerOption<Object> abschliessenA = ui.new AnswerOption<>(()-> true, "Abschließen");
+        while (true){
             ConsoleManager.AnswerOption<Object> bezeichnungA = ui.new AnswerOption<>(() -> {
                 String bezeichnung = ui.returnInput(
                         "Wie lautet der Bezeichnung des Vertragspartners?"
@@ -190,7 +193,7 @@ public class WareDaoXml implements IDao<IWare, Long> {
                     ConsoleManager.AnswerOption<Object> jaA = ui.new AnswerOption<>( null, "ja");
                     ConsoleManager.AnswerOption<Object> neinA = ui.new AnswerOption<>( ()-> true, "ja");
 
-                    finished2 = (Boolean) ui.ConsoleOptions("Möchten Sie eine weitere Besonderheit anpassen?", jaA, neinA);
+                    finished2 = (Boolean) ui.ConsoleOptions("Möchten Sie eine weitere Besonderheit anpassen?",false, jaA, neinA);
 
                 }
                 return null;}, "Besonderheiten");
@@ -219,27 +222,24 @@ public class WareDaoXml implements IDao<IWare, Long> {
                     ConsoleManager.AnswerOption<Object> jaA = ui.new AnswerOption<>( null, "ja");
                     ConsoleManager.AnswerOption<Object> neinA = ui.new AnswerOption<>( ()-> true, "ja");
 
-                    finished2 = (Boolean) ui.ConsoleOptions("Möchten Sie eine weitere Mangel anpassen?", jaA, neinA);
+                    finished2 = (Boolean) ui.ConsoleOptions("Möchten Sie eine weitere Mangel anpassen?",false, jaA, neinA);
 
                 }
                 return null;}, "Mängel");
 
 
-            Object result = ui.ConsoleOptions("Welchen Wert wollen Sie von diesem Vertragspartner aktualisieren?", bezeichnungA, beschreibungA, preisA, besonderheitenA, maengelA, abschliessenA);
-            if(result instanceof Boolean){
-                finished = (boolean) result;
+            Object result = ui.ConsoleOptions("Welchen Wert wollen Sie von dieser Ware aktualisieren?", bezeichnungA, beschreibungA, preisA, besonderheitenA, maengelA);
+            if(result instanceof Boolean && (!(boolean) result)){
+                break;
             }
-            if(result instanceof IWare) {
-                updatedWare = (IWare) result;
-            }
-            if(updatedWare != null){
-                List<File> fileList = sXML.getXMLFileList();
-                File openedFile = sXML.chooseXML(fileList, "Vertrag");
-                Document doc = sXML.readXMLFile(openedFile);
 
-                Element newPartnerKnoten = sXML.newXMLWarenknoten(updatedWare);
-                doc.getRootElement().setContent(newPartnerKnoten);
-            }
+            List<File> fileList = sXML.getXMLFileList();
+            File openedFile = sXML.chooseXML(fileList, "Vertrag");
+            Document doc = sXML.readXMLFile(openedFile);
+
+            Element newPartnerKnoten = sXML.newXMLWarenknoten(updatedWare);
+            doc.getRootElement().addContent(newPartnerKnoten);
+
         }
     }
 
@@ -257,14 +257,18 @@ public class WareDaoXml implements IDao<IWare, Long> {
     public IWare parseXMLtoWare(Element wareKnoten){
 
         String bezeichnung = wareKnoten.getChild("Bezeichnung").getValue();
+        String id = wareKnoten.getAttributeValue("id");
         String beschreibung = Optional.ofNullable(wareKnoten.getChild("Beschreibung")).map(Element::getValue).orElse("");
-//        String id = Optional.ofNullable(wareKnoten.getChild("ID")).map(Element::getValue).orElse("");
         String preis = Optional.ofNullable(wareKnoten.getChild("Preis")).map(Element::getValue).orElse("");
 
         Element besonderheiten = wareKnoten.getChild("Besonderheiten");
         Element maengel = wareKnoten.getChild("Maengel");
 
-        Ware ware = new Ware(bezeichnung, Long.parseLong(preis));
+        Ware ware = new Ware(bezeichnung, Double.parseDouble(preis));
+
+        if(!id.equals("")){
+            ware.setId(Long.parseLong(id));
+        }
 
         if(!beschreibung.equals(""))
             ware.setBeschreibung(beschreibung);

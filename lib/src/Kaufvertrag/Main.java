@@ -3,27 +3,22 @@ package Kaufvertrag;
 import Kaufvertrag.businessObjects.IVertragspartner;
 import Kaufvertrag.businessObjects.IWare;
 import Kaufvertrag.dataLayer.businessObjects.Vertragspartner;
-import Kaufvertrag.dataLayer.businessObjects.Ware;
 import Kaufvertrag.dataLayer.businessObjects.dataAccessObjects.ConsoleManager;
 import Kaufvertrag.dataLayer.businessObjects.dataAccessObjects.DataLayerManager;
 import Kaufvertrag.dataLayer.businessObjects.dataAccessObjects.IDao;
 import Kaufvertrag.dataLayer.businessObjects.dataAccessObjects.IDataLayer;
 import Kaufvertrag.dataLayer.businessObjects.dataAccessObjects.XML.DataLayerXml;
-import Kaufvertrag.dataLayer.businessObjects.dataAccessObjects.XML.ServiceXml;
+import Kaufvertrag.dataLayer.businessObjects.dataAccessObjects.XML.VertragspartnerDaoXml;
 import Kaufvertrag.dataLayer.businessObjects.dataAccessObjects.sqlite.DataLayerSqlite;
 import Kaufvertrag.exceptions.DaoException;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 
 public class Main {
     public static final String PROJECTPATH = System.getProperty("user.dir");
 
-    //benutzt um Ids mit Vertragspartner assoziieren zu können, um so nicht für jeden einzelnen Schritt durch alles durch Iterieren zu müssen.
-    public static Map<IVertragspartner, String> dataStore = new HashMap<>();
     public static void main(String[] args) {
         try {
             ConsoleManager ui = ConsoleManager.getInstance();
@@ -107,16 +102,9 @@ public class Main {
      * Vertragspartner
      **/
     public static void createNewVertragspartner(IDao<IVertragspartner, String> daoPartner){
-        ConsoleManager ui = ConsoleManager.getInstance();
         try {
             Vertragspartner partner = (Vertragspartner) daoPartner.create();
-            ConsoleManager.AnswerOption<Object> jaA = ui.new AnswerOption<>(daoPartner::create, "ja");
-            ConsoleManager.AnswerOption<Object> neinA = ui.new AnswerOption<>(null, "nein");
-            Vertragspartner partner2 = (Vertragspartner) ui.ConsoleOptions("Für einen Vertrag werden zwei Partner benötigt. Wollen Sie einen weiteren Partner hinzufügen?",false, jaA, neinA);
             daoPartner.create(partner);
-            if(partner2 != null){
-                daoPartner.create(partner2);
-            }
         } catch (DaoException e) {
             throw new RuntimeException(e);
         }
@@ -130,6 +118,8 @@ public class Main {
             }
             Object result = makeAnswerList(partnerList, "Welchen Vertragspartner möchten Sie überschreiben?");
             if(result instanceof IVertragspartner oldPartner) {
+                String id = getVertragspartnerId(dataLayer,daoPartner,oldPartner);
+                daoPartner.delete(id);
                 IVertragspartner newPartner = daoPartner.create();
                 daoPartner.create(newPartner);
             }
@@ -156,7 +146,8 @@ public class Main {
             Object result = makeAnswerList(partnerList, "Welchen Vertragspartner möchten Sie überarbeiten?");
             if(result instanceof IVertragspartner partner) {
 //                daoPartner.delete(getId(dataLayer, "Vertragspartner", partner.getVorname()));
-                daoPartner.delete(dataStore.get(partner));
+                String id = getVertragspartnerId(dataLayer,daoPartner,partner);
+                daoPartner.delete(id);
                 daoPartner.update(partner);
             }
         } catch (DaoException e) {
@@ -174,8 +165,7 @@ public class Main {
             Object result = makeAnswerList(partnerList, "Welchen Vertragspartner möchten Sie löschen?");
             if(result instanceof IVertragspartner partner) {
 //                String id = getId(dataLayer, "Vorname", partner.getVorname());
-                String id = dataStore.get(partner);
-                System.out.println("Test "+ id);
+                String id = getVertragspartnerId(dataLayer,daoPartner,partner);
                 daoPartner.delete(id);
             }
         } catch (DaoException e) {
@@ -188,7 +178,7 @@ public class Main {
      **/
     public static void createWare(IDao<IWare, Long> daoWare){
         try {
-            Ware ware = (Ware) daoWare.create();
+            IWare ware = daoWare.create();
             daoWare.create(ware);
         } catch (DaoException e) {
             throw new RuntimeException(e);
@@ -196,13 +186,17 @@ public class Main {
     }
 
     public static void createInsertWare(IDao<IWare, Long> daoWare, IDataLayer dataLayer){
-        ConsoleManager ui = ConsoleManager.getInstance();
         try {
             List<IWare> warenListe = daoWare.readAll();
+            if(warenListe.isEmpty()){
+                System.out.println("Konnte keine Ware zum überschreiben finden!");
+                return;
+            }
             Object result = makeAnswerList(warenListe, "Welche Ware möchten Sie überschreiben?");
-            IWare newWare = daoWare.create();
             if(result instanceof IWare oldWare) {
-                daoWare.delete(oldWare.getId());
+                Long id = oldWare.getId();
+                daoWare.delete(id);
+                IWare newWare = daoWare.create();
                 daoWare.create(newWare);
             }
         } catch (DaoException e) {
@@ -213,56 +207,56 @@ public class Main {
     public static void readWare(IDao<IWare, Long> daoWare){
         ConsoleManager ui = ConsoleManager.getInstance();
 
-        //read
-//        ConsoleManager.AnswerOption<Object> readA = ui.new AnswerOption<>(() -> {
-//            wareDaoXml.readAll();
-//            return  null;
-//        }, "Vorhanden Vertragspartner finden");
+        //Nicht Implementiert
 
     }
 
     public static void updateWare(IDao<IWare, Long> daoWare){
-        ConsoleManager ui = ConsoleManager.getInstance();
-        //update
-        /*ConsoleManager.AnswerOption<Object> updateA = ui.new AnswerOption<>(() -> {
-            List<File> fileList = sXML.getXMLFileList();
-            File openedFile = sXML.chooseXML(fileList);
-            Document doc = sXML.readXMLFile(openedFile);
+        try {
+            List<IWare> warenListe = daoWare.readAll();
+            if(warenListe.isEmpty()){
+                System.out.println("Konnte keine Ware zum überarbeiten finden!");
+                return;
+            }
+            Object result = makeAnswerList(warenListe, "Welche Ware möchten Sie überarbeiten?");
+            if(result instanceof IWare ware) {
+                Long id = ware.getId();
+                daoWare.delete(id);
+                daoWare.update(ware);
+            }
+        } catch (DaoException e) {
+            throw new RuntimeException(e);
+        }
 
-            Element warenKnoten = sXML.UnterKnotenAuswahlen(doc,"Ware","Bezeichnung","Welchen Ware möchten Sie überarbeiten?");
-            Ware ware = (Ware) wareDaoXml.parseXMLtoWare(warenKnoten);
-            wareDaoXml.update(ware);
-            Element newWarenKnoten = sXML.newXMLWarenknoten(ware);
-            doc.getRootElement().removeContent(warenKnoten);
-            doc.getRootElement().setContent(newWarenKnoten);
-
-            sXML.saveXML(doc, openedFile);
-            return  null;
-        }, "Eine vorhandene Ware aktualisieren");*/
     }
 
     public static void deleteWare(IDao<IWare, Long> daoWare){
-        ConsoleManager ui = ConsoleManager.getInstance();
-        // delete
-       /* ConsoleManager.AnswerOption<Object> deleteA = ui.new AnswerOption<>(() -> {
-            List<File> fileList = sXML.getXMLFileList();
-            File openedFile = sXML.chooseXML(fileList, "In welcher Datei möchten Sie einen Knoten löschen?");
-            Document doc = sXML.readXMLFile(openedFile);
-            Element warenKnoten = sXML.UnterKnotenAuswahlen(doc,"Ware","Bezeichnung","Welchen Vertragspartner möchten Sie Löschen?");
-            daoWare.delete(Long.parseLong(warenKnoten.getAttributeValue("id")));
-            return null;
-        }, "Einem vertragspartner löschen");*/
+        try {
+            List<IWare> warenListe = daoWare.readAll();
+            if(warenListe.isEmpty()){
+                System.out.println("Konnte keine Ware zum löschen finden!");
+                return;
+            }
+            Object result = makeAnswerList(warenListe, "Welchen Vertragspartner möchten Sie löschen?");
+            if(result instanceof IWare ware) {
+                Long id = ware.getId();
+                daoWare.delete(id);
+            }
+        } catch (DaoException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
     /**
      * Utility
      * */
 
-    private static <T> String getId(IDataLayer layer, String nodeName, String value){
+    private static String getVertragspartnerId(IDataLayer layer, IDao<IVertragspartner, String> dao, IVertragspartner partner){
         String id = null;
         if(layer instanceof DataLayerXml){
-            ServiceXml sXML = ServiceXml.getInstance();
-            id = sXML.nameSearchAllXML(nodeName, value).element.getParentElement().getAttributeValue("id");
+            var daoXML = (VertragspartnerDaoXml) dao;
+            id = daoXML.idStore.get(partner);
         }
         else if (layer instanceof DataLayerSqlite) {
 
@@ -270,14 +264,15 @@ public class Main {
         return id;
     }
 
+
     private static <T> Object makeAnswerList(List<T> objects, String frage){
         ConsoleManager ui = ConsoleManager.getInstance();
 
         List<ConsoleManager.AnswerOption<T>> answerList = new ArrayList<>();
         for(T object : objects){
-            ConsoleManager.AnswerOption<T> mangelA = ui.new AnswerOption<>(() ->
+            ConsoleManager.AnswerOption<T> answerA = ui.new AnswerOption<>(() ->
                     object, object.toString());
-            answerList.add(mangelA);
+            answerList.add(answerA);
         }
 
         @SuppressWarnings("unchecked")

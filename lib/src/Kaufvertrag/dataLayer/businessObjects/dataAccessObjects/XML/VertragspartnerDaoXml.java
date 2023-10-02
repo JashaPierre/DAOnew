@@ -1,6 +1,5 @@
 package Kaufvertrag.dataLayer.businessObjects.dataAccessObjects.XML;
 
-import Kaufvertrag.Main;
 import Kaufvertrag.businessObjects.IVertragspartner;
 import Kaufvertrag.dataLayer.businessObjects.Adresse;
 import Kaufvertrag.dataLayer.businessObjects.Vertragspartner;
@@ -11,11 +10,11 @@ import org.jdom2.Document;
 import org.jdom2.Element;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public class VertragspartnerDaoXml implements IDao<IVertragspartner, String> {
+
+    public Map<IVertragspartner, String> idStore = new HashMap<>();
 
     /**
      * Erschafft einen neuen Vertragspartner, wenn gewünscht auch zwei und stattet ihn mit den gewünschten Parametern aus.
@@ -78,7 +77,7 @@ public class VertragspartnerDaoXml implements IDao<IVertragspartner, String> {
             Element root = doc.getRootElement();
 
             Element newPartnerKnoten = sXML.newXMLVertragspartnerknoten(objectToInsert);
-            root.setContent(newPartnerKnoten);
+            root.addContent(newPartnerKnoten);
             sXML.saveXML(doc, file);
             return null;
         }, "Vorhandenem hinzufügen");
@@ -119,16 +118,19 @@ public class VertragspartnerDaoXml implements IDao<IVertragspartner, String> {
     public List<IVertragspartner> readAll() throws DaoException {
         List<IVertragspartner> partnerList = new ArrayList<>();
         ServiceXml sXML = ServiceXml.getInstance();
+        idStore.clear();
         if(sXML.getXMLFileList().isEmpty())
             return null;
         for (File file : sXML.getXMLFileList()){
            Document doc = sXML.readXMLFile(file);
            Element root = doc.getRootElement();
-           if(root.getChild("Vertragspartner") != null){
-               Element partnerNode = root.getChild("Vertragspartner");
-               partnerList.add(parseXMLtoPartner(partnerNode));
-               Main.dataStore.clear();
-               Main.dataStore.put(parseXMLtoPartner(partnerNode), partnerNode.getAttributeValue("id"));
+           for(var child : root.getChildren()){
+               if(child.getName().equals("Vertragspartner")) {
+                   Element partnerNode = root.getChild("Vertragspartner");
+                   IVertragspartner partner = parseXMLtoPartner(partnerNode);
+                   partnerList.add(partner);
+                   idStore.put(partner, partnerNode.getAttributeValue("id"));
+               }
            }
         }
         return partnerList;
