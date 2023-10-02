@@ -14,11 +14,16 @@ import Kaufvertrag.dataLayer.businessObjects.dataAccessObjects.sqlite.DataLayerS
 import Kaufvertrag.exceptions.DaoException;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 public class Main {
     public static final String PROJECTPATH = System.getProperty("user.dir");
+
+    //benutzt um Ids mit Vertragspartner assoziieren zu können, um so nicht für jeden einzelnen Schritt durch alles durch Iterieren zu müssen.
+    public static Map<IVertragspartner, String> dataStore = new HashMap<>();
     public static void main(String[] args) {
         try {
             ConsoleManager ui = ConsoleManager.getInstance();
@@ -61,21 +66,25 @@ public class Main {
                     IDao<IWare, Long> daoWare = dataLayer.getDaoWare();
                     //create
                     ConsoleManager.AnswerOption<Object> creatNewA = ui.new AnswerOption<>(() -> {
+                        createWare(daoWare);
                         return null;
                     }, "Einen neue Ware erstellen");
 
                     //overwrite
                     ConsoleManager.AnswerOption<Object> creatOverwriteA = ui.new AnswerOption<>(() -> {
+                        createInsertWare(daoWare,dataLayer);
                         return null;
                     }, "Eine vorhandene Ware mit einer neuen überschreiben");
 
                     //update
                     ConsoleManager.AnswerOption<Object> updateA = ui.new AnswerOption<>(() -> {
+                        updateWare(daoWare);
                         return null;
                     }, "Eine vorhandene Ware aktualisieren");
 
                     //delete
                     ConsoleManager.AnswerOption<Object> deleteA = ui.new AnswerOption<>(() -> {
+                        deleteWare(daoWare);
                         return null;
                     }, "Eine Ware löschen");
 
@@ -121,9 +130,7 @@ public class Main {
             }
             Object result = makeAnswerList(partnerList, "Welchen Vertragspartner möchten Sie überschreiben?");
             if(result instanceof IVertragspartner oldPartner) {
-                String id = getId(dataLayer, "Vertragspartner", oldPartner.getVorname());
                 IVertragspartner newPartner = daoPartner.create();
-                daoPartner.delete(id);
                 daoPartner.create(newPartner);
             }
         } catch (DaoException e) {
@@ -148,7 +155,8 @@ public class Main {
             }
             Object result = makeAnswerList(partnerList, "Welchen Vertragspartner möchten Sie überarbeiten?");
             if(result instanceof IVertragspartner partner) {
-                daoPartner.delete(getId(dataLayer, "Vertragspartner", partner.getVorname()));
+//                daoPartner.delete(getId(dataLayer, "Vertragspartner", partner.getVorname()));
+                daoPartner.delete(dataStore.get(partner));
                 daoPartner.update(partner);
             }
         } catch (DaoException e) {
@@ -165,7 +173,9 @@ public class Main {
             }
             Object result = makeAnswerList(partnerList, "Welchen Vertragspartner möchten Sie löschen?");
             if(result instanceof IVertragspartner partner) {
-                String id = getId(dataLayer, "Vertragspartner", partner.getVorname());
+//                String id = getId(dataLayer, "Vorname", partner.getVorname());
+                String id = dataStore.get(partner);
+                System.out.println("Test "+ id);
                 daoPartner.delete(id);
             }
         } catch (DaoException e) {
@@ -248,10 +258,11 @@ public class Main {
      * Utility
      * */
 
-    private static <T> String getId(IDataLayer layer, String type, String id){
+    private static <T> String getId(IDataLayer layer, String nodeName, String value){
+        String id = null;
         if(layer instanceof DataLayerXml){
             ServiceXml sXML = ServiceXml.getInstance();
-            sXML.idSearchAllXml(type, id);
+            id = sXML.nameSearchAllXML(nodeName, value).element.getParentElement().getAttributeValue("id");
         }
         else if (layer instanceof DataLayerSqlite) {
 

@@ -230,7 +230,7 @@ public class ServiceXml {
                      int idMAxValue = (int) Math.pow(10, lenght) - 1;
                      Random random = new Random();
                      randomVal =  random.nextInt(idMAxValue);
-                     var file = idSearchAllXml("", Integer.toString(randomVal));
+                     var file = idSearchAllXML("", Integer.toString(randomVal));
                      if(file.element == null)
                          break;
                  }
@@ -239,7 +239,7 @@ public class ServiceXml {
          }
      }
 
-    public JdomFile idSearchAllXml(String nodeName, String id){
+    public JdomFile idSearchAllXML(String nodeName, String id){
         var fileList = getXMLFileList();
         for(var file :fileList){
             Document doc = readXMLFile(file);
@@ -249,10 +249,20 @@ public class ServiceXml {
         return null;
     }
 
+    public JdomFile nameSearchAllXML(String nodeName, String value){
+        var fileList = getXMLFileList();
+        for(var file :fileList){
+            Document doc = readXMLFile(file);
+            Element element = searchRecursively(doc.getRootElement(),false, nodeName,"", value);
+            return new JdomFile(element, file);
+        }
+        return null;
+    }
+
      public Element searchRecursively(Element element, boolean attribute, String nodeName, String attName, String value) {
          if(attribute) {
              if ((element.getName().equals(nodeName) && element.getAttributeValue(attName) != null && element.getAttributeValue(attName).equals(value))
-                     || (nodeName.equals("") && element.getAttributeValue(attName) != null && element.getAttributeValue(attName).equals(value)))
+                     || (element.getName().equals(nodeName) && value.equals("") && element.getAttributeValue(attName) != null ))
                  return element;
          }
          else {

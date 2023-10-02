@@ -11,37 +11,34 @@ import java.sql.*;
 import java.util.List;
 
 public class VertragspartnerDaoSqlite implements IDao<IVertragspartner, String> { //calls connectManager
-    ConnectionManager cM = ConnectionManager.getInstance();
 
     @Override
     public IVertragspartner create() {
         ConsoleManager ui = ConsoleManager.getInstance();
+        String vorname = ui.returnInput(
+                "Wie lautet der Vorname des Vertragspartners?"
+        );
+        String nachname = ui.returnInput(
+                "Wie lautet der Nachname des Vertragspartners?"
+        );
+        Vertragspartner partner = new Vertragspartner(vorname, nachname);
 
-        System.out.println("Wie lautet der Vorname des Vertragspartners?");
-        String vorname = ui.getScanner().next();
-        System.out.println("Wie lautet der Nachname des Vertragspartners?");
-        String nachname = ui.getScanner().next();
-        Vertragspartner vertragspartner = new Vertragspartner(vorname, nachname);
-
-        ConsoleManager.AnswerOption<Object> jaAt = ui.new AnswerOption<>(() -> {
-            vertragspartner.setAusweisNr("");
-            return null;
-        }, "Ja");
-        ConsoleManager.AnswerOption<Object> neinAt = ui.new AnswerOption<>(null, "Nein");
-        ui.ConsoleOptions("Möchten Sie dem Vertragspartner eine Ausweisnummer zuweisen?", jaAt, neinAt);
-        jaAt = ui.new AnswerOption<>(() -> {
-
+        ConsoleManager.AnswerOption<Object> jaA = ui.new AnswerOption<>(() -> {
+            partner.setAusweisNr(""); return null;}, "Ja");
+        ConsoleManager.AnswerOption<Object> neinA = ui.new AnswerOption<>(null, "Nein");
+        ui.ConsoleOptions("Möchten Sie dem Vertragspartner eine Ausweisnummer geben?",false, jaA, neinA);
+        jaA = ui.new AnswerOption<>(() -> {
             String strasse = ui.returnInput(
                     "Geben Sie einen Straßennamen ein.",
                     "^[-\\p{L}\\s]*$",
                     "Kein gültiges format für einen Straßennamen."
             );
-            String hausNr = ui.returnInput(
+            String hausNr  = ui.returnInput(
                     "Geben Sie einen Hausnummer ein.",
                     "\\b\\d+\\S*\\b",
                     "Kein gültiges format für eine Hausnummer."
             );
-            String plz = ui.returnInput(
+            String plz  = ui.returnInput(
                     "Geben Sie einen Postleitzahl ein.",
                     "\\b\\d{5}\\b",
                     "Kein gültiges format für eine Postleitzahl."
@@ -51,54 +48,48 @@ public class VertragspartnerDaoSqlite implements IDao<IVertragspartner, String> 
                     "\\b\\w+\\b",
                     "Kein gültiges format für einen Ort."
             );
-            vertragspartner.setAdresse(new Adresse(strasse, hausNr, plz, ort));
-            return vertragspartner; //changed 21:23
+            partner.setAdresse(new Adresse(strasse, hausNr, plz , ort));
+            return null;
         }, "Ja");
-        neinAt = ui.new AnswerOption<>(null, "Nein");
-        ui.ConsoleOptions("Möchten Sie dem Vertragspartner eine Adresse zuordnen?", jaAt, neinAt);
-
-        Connection connection;
-        PreparedStatement preparedStatement;
-
-        try {
-            // Verbindung zur SQLite-Datenbank herstellen
-            connection = cM.getConnection();
-
-            // SQL-Statement zum Einfügen der Daten
-            String insertSQL = "INSERT INTO Vertragspartner (ausweisNr, vorname, nachname, strasse, hausNr, plz, ort) VALUES (?, ?, ?, ?, ?, ?, ?)";
-
-            // Daten aus deinem Objekt extrahieren
-            int ausweisNr = 123; // Zum Beispiel
-            vertragspartner.getVorname();
-            vertragspartner.getNachname();
-            vertragspartner.getAdresse().getStrasse();
-            vertragspartner.getAdresse().getHausNr();
-            vertragspartner.getAdresse().getPlz();
-            vertragspartner.getAdresse().getOrt();
-
-            // PreparedStatement erstellen
-            preparedStatement = connection.prepareStatement(insertSQL);
-            preparedStatement.setInt(1, ausweisNr);
-            preparedStatement.setString(2, vorname);
-            preparedStatement.setString(3, nachname);
-            preparedStatement.setString(4, vertragspartner.getAdresse().getStrasse());
-            preparedStatement.setString(5, vertragspartner.getAdresse().getHausNr());
-            preparedStatement.setString(6, vertragspartner.getAdresse().getPlz());
-            preparedStatement.setString(7, vertragspartner.getAdresse().getOrt());
-
-            // Daten in die Datenbank einfügen
-            preparedStatement.executeUpdate();
-
-            System.out.println("Daten erfolgreich in die Datenbank eingefügt.");
-        } catch (SQLException /*| ClassNotFoundException */e) {
-            throw new RuntimeException(e);
-        }
-        return vertragspartner;
+        neinA = ui.new AnswerOption<>(null, "Nein");
+        ui.ConsoleOptions("Möchten Sie dem Vertragspartner eine Adresse zuordnen?",false, jaA, neinA);
+        return partner;
     }
 
     @Override
     public void create(IVertragspartner objectToInsert) throws DaoException {
         String sql = "SELECT * FROM Vertragspartner WHERE id = ?";
+        Connection connection;
+        PreparedStatement preparedStatement;
+
+        try {
+            // Verbindung zur SQLite-Datenbank herstellen
+            connection = ConnectionManager.getConnection();
+
+            // SQL-Statement zum Einfügen der Daten
+            String insertSQL
+                    = "INSERT INTO Vertragspartner (ausweisNr, vorname, nachname, strasse, hausNr, plz, ort) " +
+                    "VALUES (?, ?, ?, ?, ?, ?, ?)";
+
+
+            // PreparedStatement erstellen
+            preparedStatement = connection.prepareStatement(insertSQL);
+            preparedStatement.setString(1, objectToInsert.getAusweisNr());
+            preparedStatement.setString(2, objectToInsert.getVorname());
+            preparedStatement.setString(3, objectToInsert.getNachname());
+            if(objectToInsert.getAdresse() != null) {
+                preparedStatement.setString(4, objectToInsert.getAdresse().getStrasse());
+                preparedStatement.setString(5, objectToInsert.getAdresse().getHausNr());
+                preparedStatement.setString(6, objectToInsert.getAdresse().getPlz());
+                preparedStatement.setString(7, objectToInsert.getAdresse().getOrt());
+            }
+
+            // Daten in die Datenbank einfügen
+            preparedStatement.executeUpdate();
+            System.out.println("Daten erfolgreich in die Datenbank eingefügt.");
+        } catch (SQLException /*| ClassNotFoundException */e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override

@@ -17,6 +17,7 @@ import java.util.Optional;
  * Soll IWare später benutzen.
  * */
 public class WareDaoXml implements IDao<IWare, Long> {
+
     @Override
     public IWare create() {
         ConsoleManager ui = ConsoleManager.getInstance();
@@ -245,7 +246,7 @@ public class WareDaoXml implements IDao<IWare, Long> {
     @Override
     public void delete(Long id) throws DaoException {
         ServiceXml sXML = ServiceXml.getInstance();
-        var jdFile = sXML.idSearchAllXml("Ware", Long.toString(id));
+        var jdFile = sXML.idSearchAllXML("Ware", Long.toString(id));
         Element warenKnoten = jdFile.element;
         File file = jdFile.file;
         Element root = warenKnoten.getDocument().getRootElement();

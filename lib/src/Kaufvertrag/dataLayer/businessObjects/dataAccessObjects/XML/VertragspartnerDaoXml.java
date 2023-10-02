@@ -1,5 +1,6 @@
 package Kaufvertrag.dataLayer.businessObjects.dataAccessObjects.XML;
 
+import Kaufvertrag.Main;
 import Kaufvertrag.businessObjects.IVertragspartner;
 import Kaufvertrag.dataLayer.businessObjects.Adresse;
 import Kaufvertrag.dataLayer.businessObjects.Vertragspartner;
@@ -126,6 +127,8 @@ public class VertragspartnerDaoXml implements IDao<IVertragspartner, String> {
            if(root.getChild("Vertragspartner") != null){
                Element partnerNode = root.getChild("Vertragspartner");
                partnerList.add(parseXMLtoPartner(partnerNode));
+               Main.dataStore.clear();
+               Main.dataStore.put(parseXMLtoPartner(partnerNode), partnerNode.getAttributeValue("id"));
            }
         }
         return partnerList;
@@ -214,7 +217,7 @@ public class VertragspartnerDaoXml implements IDao<IVertragspartner, String> {
     @Override
     public void delete(String id) throws DaoException {
         ServiceXml sXML = ServiceXml.getInstance();
-        var jdFile = sXML.idSearchAllXml("Vertragspartner", id);
+        var jdFile = sXML.idSearchAllXML("Vertragspartner", id);
         Element partnerKnoten = jdFile.element;
         File file = jdFile.file;
         Element root = partnerKnoten.getDocument().getRootElement();

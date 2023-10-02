@@ -9,7 +9,7 @@ import java.util.Random;
 public class Ware implements IWare {
     private String bezeichnung;
     private String beschreibung;
-    private final long ID;
+    private long id;
     private double preis;
     private List<String> besonderheitenListe;
     private List<String> maengelListe;
@@ -17,12 +17,11 @@ public class Ware implements IWare {
     public Ware(String bezeichnung, double preis) {
         this.bezeichnung = bezeichnung;
         this.preis = preis;
-        this.ID = genrateID();
     }
 
     @Override
     public long getId() {
-        return ID;
+        return id;
     }
 
     @Override
@@ -69,6 +68,10 @@ public class Ware implements IWare {
     @Override
     public void setPreis(double preis) {
         this.preis = preis;
+    }
+
+    public void setId(Long id){
+        this.id = id;
     }
 
     @Override
