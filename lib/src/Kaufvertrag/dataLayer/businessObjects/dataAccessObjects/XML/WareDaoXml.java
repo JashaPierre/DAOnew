@@ -123,7 +123,6 @@ public class WareDaoXml implements IDao<IWare, Long> {
     }
 
     public IWare parseXMLtoWare(Element wareKnoten){
-
         String bezeichnung = wareKnoten.getChild("Bezeichnung").getValue();
         String id = wareKnoten.getAttributeValue("id");
         String beschreibung = Optional.ofNullable(wareKnoten.getChild("Beschreibung")).map(Element::getValue).orElse("");
