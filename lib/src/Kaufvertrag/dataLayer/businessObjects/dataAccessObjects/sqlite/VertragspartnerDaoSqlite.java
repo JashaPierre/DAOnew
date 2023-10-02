@@ -1,13 +1,15 @@
 package Kaufvertrag.dataLayer.businessObjects.dataAccessObjects.sqlite;
 
 import Kaufvertrag.businessObjects.IVertragspartner;
-import Kaufvertrag.dataLayer.businessObjects.Adresse;
 import Kaufvertrag.dataLayer.businessObjects.Vertragspartner;
 import Kaufvertrag.dataLayer.businessObjects.dataAccessObjects.ConsoleManager;
 import Kaufvertrag.dataLayer.businessObjects.dataAccessObjects.IDao;
 import Kaufvertrag.exceptions.DaoException;
-import java.sql.*;
+import org.jdom2.Element;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.List;
 
 public class VertragspartnerDaoSqlite implements IDao<IVertragspartner, String> { //calls connectManager
@@ -21,39 +23,7 @@ public class VertragspartnerDaoSqlite implements IDao<IVertragspartner, String> 
         String nachname = ui.returnInput(
                 "Wie lautet der Nachname des Vertragspartners?"
         );
-        Vertragspartner partner = new Vertragspartner(vorname, nachname);
-
-        ConsoleManager.AnswerOption<Object> jaA = ui.new AnswerOption<>(() -> {
-            partner.setAusweisNr(""); return null;}, "Ja");
-        ConsoleManager.AnswerOption<Object> neinA = ui.new AnswerOption<>(null, "Nein");
-        ui.ConsoleOptions("Möchten Sie dem Vertragspartner eine Ausweisnummer geben?",false, jaA, neinA);
-        jaA = ui.new AnswerOption<>(() -> {
-            String strasse = ui.returnInput(
-                    "Geben Sie einen Straßennamen ein.",
-                    "^[-\\p{L}\\s]*$",
-                    "Kein gültiges format für einen Straßennamen."
-            );
-            String hausNr  = ui.returnInput(
-                    "Geben Sie einen Hausnummer ein.",
-                    "\\b\\d+\\S*\\b",
-                    "Kein gültiges format für eine Hausnummer."
-            );
-            String plz  = ui.returnInput(
-                    "Geben Sie einen Postleitzahl ein.",
-                    "\\b\\d{5}\\b",
-                    "Kein gültiges format für eine Postleitzahl."
-            );
-            String ort = ui.returnInput(
-                    "Geben Sie einen Ort ein.",
-                    "\\b\\w+\\b",
-                    "Kein gültiges format für einen Ort."
-            );
-            partner.setAdresse(new Adresse(strasse, hausNr, plz , ort));
-            return null;
-        }, "Ja");
-        neinA = ui.new AnswerOption<>(null, "Nein");
-        ui.ConsoleOptions("Möchten Sie dem Vertragspartner eine Adresse zuordnen?",false, jaA, neinA);
-        return partner;
+        return new Vertragspartner(vorname, nachname);
     }
 
     @Override
@@ -94,33 +64,30 @@ public class VertragspartnerDaoSqlite implements IDao<IVertragspartner, String> 
 
     @Override
     public IVertragspartner read(String id) throws DaoException {
+        Connection connection = ConnectionManager.getConnection();
         return null;
         //select auf tabelle genau eins -> Ergibt keinen Sinn dies zu Implementieren.
     }
 
     @Override
     public List<IVertragspartner> readAll() throws DaoException {
-       /* PreparedStatement preparedStatement = null;
-        Connection connection = connectionManager.getExistingConnection();
+        Connection connection = ConnectionManager.getConnection();
         String readSql = "SELECT * FROM Vertragspartner";
         try {
-            preparedStatement = connection.prepareStatement(readSql);
+            PreparedStatement preparedStatement = connection.prepareStatement(readSql);
         } catch (SQLException e) {
             throw new RuntimeException(e);
-        }*/
+        }
         return null;
 
     }
 
     @Override
     public void update(IVertragspartner objectToUpdate) throws DaoException {
+        Connection connection = ConnectionManager.getConnection();
+        ConsoleManager ui = ConsoleManager.getInstance();
+        ui.updateVertragspartnerUI(objectToUpdate);
 
-       /* Connection connection;
-        try {
-            connection = connectionManager.getNewConnection();
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
-        }
         String sql = "UPDATE Vertragspartner SET bezeichnung = ?, beschreibung = ?, preis = ?, besonderheiten = ?, maengel = ? WHERE id = ?";
 
         PreparedStatement preparedStatement = null;
@@ -128,12 +95,12 @@ public class VertragspartnerDaoSqlite implements IDao<IVertragspartner, String> 
             preparedStatement = connection.prepareStatement(sql);
         } catch (SQLException e) {
             throw new RuntimeException(e);
-        }*/
+        }
     }
 
     @Override
     public void delete(String id) throws DaoException {
-        /*try (Connection connection = connectionManager.getExistingConnection()) {
+        try (Connection connection = ConnectionManager.getConnection()) {
             String sql = "DELETE FROM Vertragspartner WHERE id = ?";
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setString(1, id);
@@ -141,6 +108,10 @@ public class VertragspartnerDaoSqlite implements IDao<IVertragspartner, String> 
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
-        }*/
+        }
+    }
+
+    public IVertragspartner parseSQLtoPartner(Element partnerNode){
+        return null;
     }
 }

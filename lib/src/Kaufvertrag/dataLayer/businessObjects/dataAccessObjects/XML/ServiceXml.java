@@ -136,12 +136,10 @@ public class ServiceXml {
 
         Element bezeichnung = new Element("Bezeichnung");
         Element beschreibung = new Element("Beschreibung");
-        Element ID = new Element("ID");
         Element preis = new Element("Preis");
 
         bezeichnung.setText(iWare.getBezeichnung());
         beschreibung.setText(iWare.getBeschreibung());
-        ID.setText(Long.toString(iWare.getId()));
         preis.setText(Double.toString(iWare.getPreis()));
 
         Element besonderheiten = new Element("Besonderheiten");
@@ -159,7 +157,6 @@ public class ServiceXml {
 
         ware.addContent(bezeichnung);
         ware.addContent(beschreibung);
-        ware.addContent(ID);
         ware.addContent(preis);
         ware.addContent(besonderheiten);
         ware.addContent(maengel);
@@ -229,7 +226,7 @@ public class ServiceXml {
      private void createUniqueID(Document doc){
          int randomVal;
          for (Element child : doc.getRootElement().getChildren()){
-             if(child.getAttribute("id") == null){
+             if(child.getAttribute("id") == null || child.getAttributeValue("id").equals("0")){
                  while(true) {
                      int lenght = 8;
                      int idMAxValue = (int) Math.pow(10, lenght) - 1;

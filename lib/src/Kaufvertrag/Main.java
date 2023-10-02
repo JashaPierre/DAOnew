@@ -119,9 +119,9 @@ public class Main {
             Object result = makeAnswerList(partnerList, "Welchen Vertragspartner möchten Sie überschreiben?");
             if(result instanceof IVertragspartner oldPartner) {
                 String id = getVertragspartnerId(dataLayer,daoPartner,oldPartner);
-                daoPartner.delete(id);
                 IVertragspartner newPartner = daoPartner.create();
                 daoPartner.create(newPartner);
+                daoPartner.delete(id);
             }
         } catch (DaoException e) {
             throw new RuntimeException(e);
@@ -147,8 +147,8 @@ public class Main {
             if(result instanceof IVertragspartner partner) {
 //                daoPartner.delete(getId(dataLayer, "Vertragspartner", partner.getVorname()));
                 String id = getVertragspartnerId(dataLayer,daoPartner,partner);
-                daoPartner.delete(id);
                 daoPartner.update(partner);
+                daoPartner.delete(id);
             }
         } catch (DaoException e) {
             throw new RuntimeException(e);
@@ -195,9 +195,9 @@ public class Main {
             Object result = makeAnswerList(warenListe, "Welche Ware möchten Sie überschreiben?");
             if(result instanceof IWare oldWare) {
                 Long id = oldWare.getId();
-                daoWare.delete(id);
                 IWare newWare = daoWare.create();
                 daoWare.create(newWare);
+                daoWare.delete(id);
             }
         } catch (DaoException e) {
             throw new RuntimeException(e);
@@ -221,8 +221,8 @@ public class Main {
             Object result = makeAnswerList(warenListe, "Welche Ware möchten Sie überarbeiten?");
             if(result instanceof IWare ware) {
                 Long id = ware.getId();
-                daoWare.delete(id);
                 daoWare.update(ware);
+                daoWare.delete(id);
             }
         } catch (DaoException e) {
             throw new RuntimeException(e);

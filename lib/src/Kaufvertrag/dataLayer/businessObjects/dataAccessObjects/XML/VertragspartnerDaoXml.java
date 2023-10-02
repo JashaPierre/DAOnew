@@ -28,39 +28,7 @@ public class VertragspartnerDaoXml implements IDao<IVertragspartner, String> {
         String nachname = ui.returnInput(
                 "Wie lautet der Nachname des Vertragspartners?"
         );
-        Vertragspartner partner = new Vertragspartner(vorname, nachname);
-
-        ConsoleManager.AnswerOption<Object> jaA = ui.new AnswerOption<>(() -> {
-            partner.setAusweisNr(""); return null;}, "Ja");
-        ConsoleManager.AnswerOption<Object> neinA = ui.new AnswerOption<>(null, "Nein");
-        ui.ConsoleOptions("Möchten Sie dem Vertragspartner eine Ausweisnummer geben?",false, jaA, neinA);
-        jaA = ui.new AnswerOption<>(() -> {
-            String strasse = ui.returnInput(
-                    "Geben Sie einen Straßennamen ein.",
-                    "^[-\\p{L}\\s]*$",
-                    "Kein gültiges format für einen Straßennamen."
-            );
-            String hausNr  = ui.returnInput(
-                    "Geben Sie einen Hausnummer ein.",
-                    "\\b\\d+\\S*\\b",
-                    "Kein gültiges format für eine Hausnummer."
-            );
-            String plz  = ui.returnInput(
-                    "Geben Sie einen Postleitzahl ein.",
-                    "\\b\\d{5}\\b",
-                    "Kein gültiges format für eine Postleitzahl."
-            );
-            String ort = ui.returnInput(
-                    "Geben Sie einen Ort ein.",
-                    "\\b\\w+\\b",
-                    "Kein gültiges format für einen Ort."
-            );
-            partner.setAdresse(new Adresse(strasse, hausNr, plz , ort));
-            return null;
-            }, "Ja");
-        neinA = ui.new AnswerOption<>(null, "Nein");
-        ui.ConsoleOptions("Möchten Sie dem Vertragspartner eine Adresse zuordnen?",false, jaA, neinA);
-        return partner;
+        return new Vertragspartner(vorname, nachname);
     }
 
     /**
@@ -138,71 +106,9 @@ public class VertragspartnerDaoXml implements IDao<IVertragspartner, String> {
 
     @Override
     public void update(IVertragspartner objectToUpdate) throws DaoException {
-        ConsoleManager ui = ConsoleManager.getInstance();
         ServiceXml sXML = ServiceXml.getInstance();
-
-        while (true) {
-            ConsoleManager.AnswerOption<Object> vornamenA = ui.new AnswerOption<>(() -> {
-                String name = ui.returnInput(
-                        "Wie lautet der Vorname des Vertragspartners?"
-                );
-                objectToUpdate.setVorname(name);
-                return null;
-            }, "Vorname (aktueller Wert: " + objectToUpdate.getVorname() + ")");
-
-            ConsoleManager.AnswerOption<Object> nachnameA = ui.new AnswerOption<>(() -> {
-                String name = ui.returnInput(
-                        "Wie lautet der Nachname des Vertragspartners?"
-                );
-                objectToUpdate.setNachname(name);
-                return null;
-            }, "Nachname (aktueller Wert: " + objectToUpdate.getNachname() + ")");
-
-            ConsoleManager.AnswerOption<Object> ausweisNrA = ui.new AnswerOption<>(() -> {
-                objectToUpdate.setAusweisNr("");
-                return null;
-            }, "Ausweisnummer (aktueller Wert: " + objectToUpdate.getAusweisNr() + ")");
-
-
-            String adresswert = "null";
-            if(objectToUpdate.getAdresse() != null)
-                adresswert = objectToUpdate.getAdresse().toString();
-            ConsoleManager.AnswerOption<Object> adresseA = ui.new AnswerOption<>(() -> {
-                if(objectToUpdate.getAdresse() == null)
-                    objectToUpdate.setAdresse(new Adresse("null","null","null","null"));
-                while (true) {
-                    ConsoleManager.AnswerOption<Object> strasseA = ui.new AnswerOption<>(() -> {
-                        objectToUpdate.getAdresse().setStrasse("");
-                        return null;
-                    }, "Straße (aktueller Wert: " + objectToUpdate.getAdresse().getStrasse() + ")");
-                    ConsoleManager.AnswerOption<Object> hausNrA = ui.new AnswerOption<>(() -> {
-                        objectToUpdate.getAdresse().setHausNr("");
-                        return null;
-                    }, "Haus Nummer (aktueller Wert: " + objectToUpdate.getAdresse().getHausNr() + ")");
-                    ConsoleManager.AnswerOption<Object> plzA = ui.new AnswerOption<>(() -> {
-                        objectToUpdate.getAdresse().setPlz("");
-                        return null;
-                    }, "Postleitzahl (aktueller Wert: " + objectToUpdate.getAdresse().getPlz() + ")");
-                    ConsoleManager.AnswerOption<Object> ortA = ui.new AnswerOption<>(() -> {
-                        objectToUpdate.getAdresse().setOrt("");
-                        return null;
-                    }, "Ort (aktueller Wert: " + objectToUpdate.getAdresse().getOrt() + ")");
-
-                    Object result = ui.ConsoleOptions("Welchen Wert der Adresse wollen Sie aktualisieren?", strasseA, hausNrA, plzA, ortA);
-                    if (result instanceof Boolean && (!(boolean) result)) {
-                        break;
-                    }
-                }
-                return null;
-            }, "Adresse (aktueller Wert: " + adresswert + ")");
-
-            System.out.println("test");
-            Object result = ui.ConsoleOptions("Welchen Wert wollen Sie von diesem Vertragspartner aktualisieren?", vornamenA, nachnameA, ausweisNrA, adresseA);
-
-            if(result instanceof Boolean && (!(boolean) result)) {
-               break;
-            }
-        }
+        ConsoleManager ui = ConsoleManager.getInstance();
+        ui.updateVertragspartnerUI(objectToUpdate);
 
         List<File> fileList = sXML.getXMLFileList();
         File openedFile = sXML.chooseXML(fileList, "Vertrag");

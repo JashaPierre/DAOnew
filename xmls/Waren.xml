@@ -1,2 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Vertrag/>
+<Vertrag>
+    <Ware id="57331810">
+        <Bezeichnung>Irgendwas</Bezeichnung>
+        <Beschreibung>Irgendwas tolles</Beschreibung>
+        <Preis>22.0</Preis>
+        <Besonderheiten>
+            <li>Besonderheit 1</li>
+            <li>Besonderheit 2</li>
+        </Besonderheiten>
+        <Maengel>
+            <li>Mangel 1</li>
+            <li>Mangel 2</li>
+        </Maengel>
+    </Ware>
+</Vertrag>
