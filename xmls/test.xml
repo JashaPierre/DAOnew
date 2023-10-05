@@ -1,2 +1,49 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Vertrag />
+<Vertrag>
+    <Vertragspartner id="58183662">
+        <Vorname>Irgenwer</Vorname>
+        <Nachname>Irgendwas</Nachname>
+        <AusweisNr>null</AusweisNr>
+        <Adresse>
+            <Strasse />
+            <HausNr />
+            <PLZ />
+            <Ort />
+        </Adresse>
+    </Vertragspartner>
+    <Vertragspartner id="55943948">
+        <Vorname>Peter</Vorname>
+        <Nachname>Pan</Nachname>
+        <AusweisNr>T2312313</AusweisNr>
+        <Adresse>
+            <Strasse>Irgendwo-Straße</Strasse>
+            <HausNr>22</HausNr>
+            <PLZ>Irgendwo</PLZ>
+            <Ort>28212</Ort>
+        </Adresse>
+    </Vertragspartner>
+    <Ware id="57331839">
+        <Bezeichnung>Irgendwas</Bezeichnung>
+        <Beschreibung>Irgendwas tolles</Beschreibung>
+        <Preis>22.0</Preis>
+        <Besonderheiten>
+            <li>Besonderheit 1</li>
+            <li>Besonderheit 2</li>
+        </Besonderheiten>
+        <Maengel>
+            <li>Mangel 1</li>
+            <li>Mangel 2</li>
+        </Maengel>
+    </Ware>
+    <Vertragspartner id="44867596">
+        <Vorname>Hans</Vorname>
+        <Nachname>Peter</Nachname>
+        <AusweisNr>null</AusweisNr>
+        <Adresse>
+            <Strasse />
+            <HausNr />
+            <PLZ />
+            <Ort />
+        </Adresse>
+    </Vertragspartner>
+</Vertrag>

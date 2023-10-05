@@ -18,19 +18,27 @@ public class Adresse implements IAdresse {
     }
     @Override
     public String getStrasse() {
-        return strasse;
+        if(strasse != null && !strasse.isBlank())
+            return strasse;
+        return "null";
     }
     @Override
     public String getHausNr() {
-        return hausNr;
+        if(hausNr != null && !hausNr.isBlank())
+            return hausNr;
+        return "null";
     }
     @Override
     public String getPlz() {
-        return plz;
+        if(plz != null && !plz.isBlank())
+            return plz;
+        return "null";
     }
     @Override
     public String getOrt() {
-        return ort;
+        if(ort != null && !ort.isBlank())
+            return ort;
+        return "null";
     }
     @Override
     public void setStrasse(String strasse) {
@@ -87,6 +95,6 @@ public class Adresse implements IAdresse {
 
     @Override
     public String toString() {
-        return strasse + " " + hausNr + ", " + plz + " " + ort + "\n";
+        return "Straße: " + strasse + " ,Hausnummer: " + hausNr + " ,PLZ: " + plz + " ,Ort: " + ort + "\n";
     }
 }

@@ -1,98 +1,153 @@
 package Kaufvertrag.dataLayer.businessObjects.dataAccessObjects.sqlite;
 
 
+import Kaufvertrag.Main;
+
+import java.io.File;
+import java.io.IOException;
 import java.sql.*;
 
 public class ConnectionManager {
+    private static final String CLASSNAME = "org.sqlite.JDBC";
+    private static final String CONNECTIONSTRING = "jdbc:sqlite:" + Main.PROJECTPATH + "\\sqlite.db";
+    private static Connection existingConnection;
+    private static boolean classLoaded;
 
-    final private static String className = "org.sqlite.JDBC";
-    final private static String url = "jdbc:sqlite:sqlite.db";
-//    private final File databaseFile = new File("my_database.db"); // Adjust the file name
-//    boolean databaseExists = databaseFile.exists();
-    private static Connection connection;
-
-    public Connection connectToDatabase(){
+    public static Connection getConnection(){
         try {
-            // Register the SQLite JDBC driver
-            Class.forName(className);
-            // Create a connection to the database or open the existing one
-            return connection = DriverManager.getConnection(url);
-
-           /* if (!databaseExists) {
-                connection.close();
-                System.out.println("Neue Database erstellt und initialisiert.");
-            }*/
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    public void createNewDatabase (Connection connection){
-
-    }
-
-
-    public Connection getNewConnection() {
-
-        // Datenbankklasse dynamisch erzeugen.
-        /*try {
-            loadClass();
-        } catch (DaoException e) {
-            throw new RuntimeException(e);
-        }*/
-
-        // Verbindung initialisieren.
-        String datei = "sqlite.db";  //Dateiname inklusive Pfad.
-        String url = "jdbc:sqlite:sqlite.db" + datei;
-        // Verbindung aufbauen.
-        try {
-            connection = DriverManager.getConnection(url);
-            String createAdresseTableSQL = "CREATE TABLE IF NOT EXISTS Adresse (" +
-                    "Id INTEGER PRIMARY KEY AUTOINCREMENT," +
-                    "Strasse TEXT," +
-                    "Stadt TEXT," +
-                    "Plz TEXT" +
-                    ")";
-            connection.createStatement().execute(createAdresseTableSQL);
-        } catch (SQLException e) {
+            if (existingConnection == null || existingConnection.isClosed()) {
+                existingConnection = connectToDatabase();
+            }
+        }catch (SQLException e) {
             throw new RuntimeException(e);
         }
-
-            try {
-            String createVertragspartnerTableSQL = "CREATE TABLE IF NOT EXISTS Vertragspartner (" +
-                    "Id INTEGER PRIMARY KEY AUTOINCREMENT," +
-                    "Vorname TEXT," +
-                    "Nachname TEXT," +
-                    "Ausweisnr TEXT," +
-                    "Adresse_Id INTEGER," + // Fremdschlüssel auf die "adresse" Tabelle
-                    "FOREIGN KEY (Adresse_Id) REFERENCES Adresse(Id)" +
-                    ")";
-            connection.createStatement().execute(createVertragspartnerTableSQL);
-            }  catch (SQLException e) {
-                throw new RuntimeException(e);
-            }
-            return connection;
+        return existingConnection;
     }
 
-   /* public Connection getExistingConnection() {
-        if(connection != null) return connection;
-        else {
+    private static Connection connectToDatabase(){
+        File dbFile = new File(Main.PROJECTPATH + "\\sqlite.db");
+        Connection conn = null;
+        try {
+            if (dbFile.exists()) {
+                if (!classLoaded) {
+                    Class.forName(CLASSNAME);
+                    classLoaded = true;
+                }
+                conn = DriverManager.getConnection(CONNECTIONSTRING);
+                createTablesIfNotExists(conn);
+            } else {
+                createNewConnection(dbFile);
+            }
+        } catch(SQLException e){
+            System.err.println("Error connecting to SQLite database: " + e.getMessage());
+        } catch(ClassNotFoundException e){
+            System.err.println("JDBC driver not found");
+        }
+        return conn;
+    }
+    private static void createNewConnection(File dbFile){
+        try {
             try {
-                return getNewConnection();
-            } catch (ClassNotFoundException e) {
+                boolean created = dbFile.createNewFile();
+                if (created) {
+                    System.out.println(dbFile.getName() + "Successfully created.");
+                }
+            } catch (IOException e) {
+                System.err.println("Error creating SQLight Database: " + e.getMessage());
+            }
+            if (!classLoaded) {
+                Class.forName(CLASSNAME);
+                classLoaded = true;
+            }
+            Connection conn = DriverManager.getConnection(CONNECTIONSTRING);
+            createTablesIfNotExists(conn);
+        }
+        catch(SQLException e){
+            System.err.println("Error connecting to SQLite database: " + e.getMessage());
+        } catch(ClassNotFoundException e){
+            System.err.println("JDBC driver not found");
+        }
+    }
+
+    private static void createTablesIfNotExists(Connection conn) throws SQLException {
+        if(!checkIfTablesArePresent(conn)){
+            try (Statement statement = conn.createStatement()) {
+                statement.execute(
+                "CREATE TABLE IF NOT EXISTS Vertragspartner (" +
+                    "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    "Vorname  VARCHAR(255)," +
+                    "Nachname VARCHAR(255)," +
+                    "AusweisNr  VARCHAR(255)," +
+                    "Adresse INTEGER REFERENCES Adresse(id)" +
+                    ");"
+                );
+                statement.execute(
+                "CREATE TABLE IF NOT EXISTS Adresse (" +
+                    "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    "Strasse  VARCHAR(255)," +
+                    "HausNr  VARCHAR(255)," +
+                    "PLZ  VARCHAR(255)," +
+                    "Ort  VARCHAR(255)" +
+                    ");"
+                );
+                statement.execute(
+                        "CREATE TABLE IF NOT EXISTS Ware (" +
+                                "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                                "Bezeichnung  VARCHAR(255)," +
+                                "Beschreibung VARCHAR(255)," +
+                                "Preis  REAL" +
+                                ");"
+                );
+                statement.execute(
+                "CREATE TABLE IF NOT EXISTS Besonderheiten (" +
+                    "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                    "WarenID INTEGER REFERENCES Ware(id)," +
+                    "Besonderheit  VARCHAR(255)" +
+                    ");"
+                );
+                statement.execute(
+                "CREATE TABLE IF NOT EXISTS Maengel (" +
+                    "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                    "WarenID INTEGER REFERENCES Ware(id)," +
+                    "Mangel  VARCHAR(255)" +
+                    ");"
+                );
+            }catch(SQLException e) {
                 throw new RuntimeException(e);
             }
         }
-    }*/
-
-    public void close(ResultSet resultSet, Statement statement, Connection connection){
-        resultSet = null;
-        statement = null;
-        connection = null;
     }
-
+    private static boolean checkIfTablesArePresent(Connection conn){
+        try {
+            DatabaseMetaData md = conn.getMetaData();
+            ResultSet rs = md.getTables(null, null, "%", null);
+            int count = 0;
+            while (rs.next()) {
+                String tableName = rs.getString(3);
+                if (tableName.equals("Vertragspartner") ||
+                        tableName.equals("Ware") ||
+                        tableName.equals("Adresse") ||
+                        tableName.equals("Besonderheiten") ||
+                        tableName.equals("Maengel")) {
+                    if (count == 5) {
+                        return true;
+                    }
+                    count++;
+                }
+            }
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
+        return false;
+    }
+    public static void closeConnection(){
+        try {
+            if(existingConnection != null && !existingConnection.isClosed()){
+                existingConnection.close();
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
 }

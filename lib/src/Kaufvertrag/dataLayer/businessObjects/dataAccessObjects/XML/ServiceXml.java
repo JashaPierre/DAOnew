@@ -1,9 +1,10 @@
 package Kaufvertrag.dataLayer.businessObjects.dataAccessObjects.XML;
 
 import Kaufvertrag.Main;
-import Kaufvertrag.dataLayer.businessObjects.Vertragspartner;
-import Kaufvertrag.dataLayer.businessObjects.Ware;
+import Kaufvertrag.businessObjects.IVertragspartner;
+import Kaufvertrag.businessObjects.IWare;
 import Kaufvertrag.dataLayer.businessObjects.dataAccessObjects.ConsoleManager;
+import org.jdom2.Attribute;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.input.SAXBuilder;
@@ -19,7 +20,9 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
- public class ServiceXml {
+import java.util.Random;
+
+public class ServiceXml {
      private static ServiceXml instance;
      private final Path XMLFOLDERPATH = Paths.get(Main.PROJECTPATH ).resolve("xmls");
      private ServiceXml(){}
@@ -65,17 +68,11 @@ import java.util.List;
         Path filePath = folderPath.resolve(fileName + ".xml");
         File file = filePath.toFile();
 
-
         saveXML(document, file);
     }
 
      public void saveXML(Document document, File file) {
-         int count = 0;
-         for (Element element : document.getRootElement().getChildren()){
-             if(element.getAttribute("id") == null)
-                 element.setAttribute("id", String.valueOf(count));
-             count++;
-         }
+         createUniqueID(document);
 
          try{
              FileOutputStream fileOutputStream = new FileOutputStream(file);
@@ -94,7 +91,7 @@ import java.util.List;
      /**
      * Einen Vertragspartnerknoten hinzufügen
      * */
-     public Element newXMLVertragspartnerknoten(Vertragspartner vertragspartner){
+     public Element newXMLVertragspartnerknoten(IVertragspartner vertragspartner){
          Element partner = new Element("Vertragspartner");
 
          Element vorname = new Element("Vorname");
@@ -112,9 +109,9 @@ import java.util.List;
          Element ort = new Element("Ort");
          if(vertragspartner.getAdresse() != null){
             strasse.setText(vertragspartner.getAdresse().getStrasse());
-            strasse.setText(vertragspartner.getAdresse().getHausNr());
-            strasse.setText(vertragspartner.getAdresse().getOrt());
-            strasse.setText(vertragspartner.getAdresse().getPlz());
+            hausNr.setText(vertragspartner.getAdresse().getHausNr());
+            plz.setText(vertragspartner.getAdresse().getOrt());
+            ort.setText(vertragspartner.getAdresse().getPlz());
          }
 
          adresse.addContent(strasse);
@@ -132,34 +129,39 @@ import java.util.List;
      /**
       * Einen Warenknoten hinzufügen
       * */
-    public Element newXMLWarenknoten(Ware ware){
-        Element warenElement = new Element("Ware");
+    public Element newXMLWarenknoten(IWare iWare){
+        Element ware = new Element("Ware");
+        Attribute attr = new Attribute("id", Long.toString(iWare.getId()));
+        ware.setAttribute(attr);
 
         Element bezeichnung = new Element("Bezeichnung");
         Element beschreibung = new Element("Beschreibung");
-        Element ID = new Element("ID");
         Element preis = new Element("Preis");
 
-        bezeichnung.setText(ware.getBezeichnung());
-        beschreibung.setText(ware.getBeschreibung());
-        ID.setText(Long.toString(ware.getId()));
-        preis.setText(Double.toString(ware.getPreis()));
-
+        bezeichnung.setText(iWare.getBezeichnung());
+        beschreibung.setText(iWare.getBeschreibung());
+        preis.setText(Double.toString(iWare.getPreis()));
 
         Element besonderheiten = new Element("Besonderheiten");
-        for (var besonderheit : ware.getBesonderheiten()){
+        for (var besonderheit : iWare.getBesonderheiten()){
             Element element = new Element("li");
             element.setText(besonderheit);
-            besonderheiten.setContent(element);
+            besonderheiten.addContent(element);
         }
         Element maengel = new Element("Maengel");
-        for (var mangel : ware.getMaengel()){
+        for (var mangel : iWare.getMaengel()){
             Element element = new Element("li");
             element.setText(mangel);
-            maengel.setContent(element);
+            maengel.addContent(element);
         }
 
-        return warenElement;
+        ware.addContent(bezeichnung);
+        ware.addContent(beschreibung);
+        ware.addContent(preis);
+        ware.addContent(besonderheiten);
+        ware.addContent(maengel);
+
+        return ware;
     }
      public void addNodesToXML(Document file, Element[]... elements){
          try{
@@ -211,47 +213,88 @@ import java.util.List;
         return xmlFileList;
     }
 
-    /**
-     * Search Though all XML files Recursively for a Name
-     * Returns an Object array containing at [0] the Element child and at [1] the file.  */
-    public Object[] nameSeachAllXml(String name){
-        var fileList = getXMLFileList();
-        for(var file :fileList){
-            Document doc = readXMLFile(file);
-            for(var child : doc.getRootElement().getChildren()){
-                for(var child2 : child.getChildren()){
-                    if(child2.getValue().equals(name)){
-                        return new Object[]{ child, file };
-                    }
-                }
-            }
-        }
-        return null;
-    }
-    public Object[] idSeachAllXml(String id){
-        var fileList = getXMLFileList();
-        for(var file :fileList){
-            Document doc = readXMLFile(file);
-            for(var child : doc.getRootElement().getChildren()){
-                if(child.getAttributeValue("id").equals(id)){
-                    return new Object[]{ child, file };
-                }
-            }
-        }
-        return null;
-    }
-     public File chooseXML(List<File> xmlFiles){
-         return chooseXML(xmlFiles, "");
+     public class JdomFile {
+         public Element element;
+         public File file;
+
+         public JdomFile(Element element, File file){
+             this.element = element;
+             this.file = file;
+         }
      }
 
-    public File chooseXML(List<File> xmlFiles, String frage){
+     private void createUniqueID(Document doc){
+         int randomVal;
+         for (Element child : doc.getRootElement().getChildren()){
+             if(child.getAttribute("id") == null || child.getAttributeValue("id").equals("0")){
+                 while(true) {
+                     int lenght = 8;
+                     int idMAxValue = (int) Math.pow(10, lenght) - 1;
+                     Random random = new Random();
+                     randomVal =  random.nextInt(idMAxValue);
+                     var file = idSearchAllXML("", Integer.toString(randomVal));
+                     if(file.element == null)
+                         break;
+                 }
+                 child.setAttribute("id", String.valueOf(randomVal));
+             }
+         }
+     }
+
+    public JdomFile idSearchAllXML(String nodeName, String id){
+        var fileList = getXMLFileList();
+        for(var file :fileList){
+            Document doc = readXMLFile(file);
+            Element element = searchRecursively(doc.getRootElement(),true, nodeName,"id", id);
+            return new JdomFile(element, file);
+        }
+        return null;
+    }
+
+    public JdomFile nameSearchAllXML(String nodeName, String value){
+        var fileList = getXMLFileList();
+        for(var file :fileList){
+            Document doc = readXMLFile(file);
+            Element element = searchRecursively(doc.getRootElement(),false, nodeName,"", value);
+            return new JdomFile(element, file);
+        }
+        return null;
+    }
+
+     public Element searchRecursively(Element element, boolean attribute, String nodeName, String attName, String value) {
+         if(attribute) {
+             if ((element.getName().equals(nodeName) && element.getAttributeValue(attName) != null && element.getAttributeValue(attName).equals(value))
+                     || (element.getName().equals(nodeName) && value.equals("") && element.getAttributeValue(attName) != null ))
+                 return element;
+         }
+         else {
+             if ((element.getName().equals(nodeName) && element.getValue().equals(value))
+              || (element.getName().equals(nodeName) && value.equals("")))
+                 return element;
+         }
+         for (Element child : element.getChildren()) {
+             Element found = searchRecursively(child, attribute, nodeName, attName, value);
+             if (found != null) {
+                 return found;
+             }
+         }
+         return null;
+     }
+
+     public File chooseXML(List<File> xmlFiles, String type){
+         return chooseXML(xmlFiles, type, "");
+     }
+
+    public File chooseXML(List<File> xmlFiles, String type, String frage){
         ConsoleManager ui = ConsoleManager.getInstance();
         List<ConsoleManager.AnswerOption<File>> listOption = new ArrayList<>();
 
         if(!xmlFiles.isEmpty()) {
             for(File file : xmlFiles){
-                ConsoleManager.AnswerOption<File> fileA = ui.new AnswerOption<>(() -> file, file.getName());
-                listOption.add(fileA);
+                if(xmlFileContainsName(file, type)) {
+                    ConsoleManager.AnswerOption<File> fileA = ui.new AnswerOption<>(() -> file, "\n\t" + file.getName());
+                    listOption.add(fileA);
+                }
             }
         }
 
@@ -259,8 +302,16 @@ import java.util.List;
         ConsoleManager.AnswerOption<File>[] array = new ConsoleManager.AnswerOption[listOption.size()];
         array = listOption.toArray(array);
         if(frage.equals(""))
-            frage = "Welche Datei möchten Sie öffnen?";
-        return (File) ui.ConsoleOptions(frage, array);
+            frage = "Welche Datei möchten Sie öffnen? ";
+        Object result = ui.ConsoleOptions(frage, array);
+        if(result instanceof File file)
+            return file;
+        else
+            return null;
+    }
+
+    private boolean xmlFileContainsName (File file, String name){
+        return searchRecursively(readXMLFile(file).getRootElement(), false, name, "", "") != null;
     }
 
     public Element UnterKnotenAuswahlen(Document document, String typen, String tyeChild, String frage){
@@ -289,5 +340,4 @@ import java.util.List;
              return pathname.isFile() && pathname.getName().toLowerCase().endsWith(".xml");
          }
      };
-
  }

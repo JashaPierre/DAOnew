@@ -10,14 +10,16 @@ import org.jdom2.Document;
 import org.jdom2.Element;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public class VertragspartnerDaoXml implements IDao<IVertragspartner, String> {
 
+    //Das Vertragspartner Object bräuchte dringend auch ein ID feld.
+    //Hier eingebaut, weil es im Plan keine genauen vorgaben zu dieser Klasse gibt.
+    public Map<IVertragspartner, String> idStore = new HashMap<>();
+
     /**
-     * Erschafft einen neuen Vertragspartner, wenn gewünscht auch zwei und stattet ihn mit den gewünschten Paramtern aus.
+     * Erschafft einen neuen Vertragspartner, wenn gewünscht auch zwei und stattet ihn mit den gewünschten Parametern aus.
      * */
     @Override
     public IVertragspartner create() {
@@ -28,58 +30,35 @@ public class VertragspartnerDaoXml implements IDao<IVertragspartner, String> {
         String nachname = ui.returnInput(
                 "Wie lautet der Nachname des Vertragspartners?"
         );
-        Vertragspartner partner = new Vertragspartner(vorname, nachname);
-
-        ConsoleManager.AnswerOption<Object> jaA = ui.new AnswerOption<>(() -> {
-            partner.setAusweisNr(""); return null;}, "Ja");
-        ConsoleManager.AnswerOption<Object> neinA = ui.new AnswerOption<>(null, "Nein");
-        ui.ConsoleOptions("Möchten Sie dem Vertragspartner eine Ausweisnummer geben?", jaA, neinA);
-        jaA = ui.new AnswerOption<>(() -> {
-            String strasse = ui.returnInput(
-                    "Geben Sie einen Straßennamen ein.",
-                    "^[-\\p{L}\\s]*$",
-                    "Kein gültiges format für einen Straßennamen."
-            );
-            String hausNr  = ui.returnInput(
-                    "Geben Sie einen Hausnummer ein.",
-                    "\\b\\d+\\S*\\b",
-                    "Kein gültiges format für eine Hausnummer."
-            );
-            String plz  = ui.returnInput(
-                    "Geben Sie einen Postleitzahl ein.",
-                    "\\b\\d{5}\\b",
-                    "Kein gültiges format für eine Postleitzahl."
-            );
-            String ort = ui.returnInput(
-                    "Geben Sie einen Ort ein.",
-                    "\\b\\w+\\b",
-                    "Kein gültiges format für einen Ort."
-            );
-            partner.setAdresse(new Adresse(strasse, hausNr, plz , ort));
-            return null;
-            }, "Ja");
-        neinA = ui.new AnswerOption<>(null, "Nein");
-        ui.ConsoleOptions("Möchten Sie dem Vertragspartner eine Adresse zuordnen?", jaA, neinA);
-        return partner;
+        return new Vertragspartner(vorname, nachname);
     }
 
     /**
-     * Sucht recursive nach dem gleichen Namen des übergebenen Vertragspartnerobjektes und gibt es wieder zurück.
+     * Persistiert den gewünschten Vertragspartner im XML.
      */
     @Override
     public void create(IVertragspartner objectToInsert) throws DaoException {
+        ConsoleManager ui = ConsoleManager.getInstance();
         ServiceXml sXML = ServiceXml.getInstance();
-        Object[] docAndFile = sXML.nameSeachAllXml(objectToInsert.getVorname());
-        Element oldPartnerknoten = (Element) docAndFile[0];
-        File file = (File) docAndFile[1];
-        Element root = oldPartnerknoten.getParentElement();
-        objectToInsert = create();
-        Element newPartnerKnoten = sXML.newXMLVertragspartnerknoten((Vertragspartner) objectToInsert);
 
-        root.setContent(newPartnerKnoten);
-        root.removeContent(oldPartnerknoten);
+        ConsoleManager.AnswerOption<String> vorhandenA = ui.new AnswerOption<>(()-> {
+            File file = sXML.chooseXML(sXML.getXMLFileList(),"Vertrag");
+            Document doc = sXML.readXMLFile(file);
+            Element root = doc.getRootElement();
 
-        sXML.saveXML(root.getDocument(), file);
+            Element newPartnerKnoten = sXML.newXMLVertragspartnerknoten(objectToInsert);
+            root.addContent(newPartnerKnoten);
+            sXML.saveXML(doc, file);
+            return null;
+        }, "Vorhandenem hinzufügen");
+
+        ConsoleManager.AnswerOption<String> neuA = ui.new AnswerOption<>(()-> {
+            String fileName = ui.returnInput("Wie soll das neue XML heißen?");
+            sXML.newXML(fileName, "Vertrag", sXML.newXMLVertragspartnerknoten(objectToInsert));
+            return null;
+        }, "Neu erstellen");
+
+        ui.ConsoleOptions("Wollen Sie den Vertragspartner einem vorhandenen oder einem neuem XML hinzufügen", vorhandenA, neuA);
     }
 
     /**
@@ -109,14 +88,19 @@ public class VertragspartnerDaoXml implements IDao<IVertragspartner, String> {
     public List<IVertragspartner> readAll() throws DaoException {
         List<IVertragspartner> partnerList = new ArrayList<>();
         ServiceXml sXML = ServiceXml.getInstance();
+        idStore.clear();
         if(sXML.getXMLFileList().isEmpty())
             return null;
         for (File file : sXML.getXMLFileList()){
            Document doc = sXML.readXMLFile(file);
            Element root = doc.getRootElement();
-           if(root.getChild("Vertragspartner") != null){
-               Element partnerNode = root.getChild("Vertragspartner");
-               partnerList.add(this.parseXMLtoPartner(partnerNode));
+           for(var child : root.getChildren()){
+               if(child.getName().equals("Vertragspartner")) {
+                   Element partnerNode = root.getChild("Vertragspartner");
+                   IVertragspartner partner = parseXMLtoPartner(partnerNode);
+                   partnerList.add(partner);
+                   idStore.put(partner, partnerNode.getAttributeValue("id"));
+               }
            }
         }
         return partnerList;
@@ -124,79 +108,32 @@ public class VertragspartnerDaoXml implements IDao<IVertragspartner, String> {
 
     @Override
     public void update(IVertragspartner objectToUpdate) throws DaoException {
+        ServiceXml sXML = ServiceXml.getInstance();
         ConsoleManager ui = ConsoleManager.getInstance();
-        Adresse adresse = (Adresse) objectToUpdate.getAdresse();
+        String id = idStore.get(objectToUpdate);
+        ui.updateVertragspartnerUI(objectToUpdate);
 
-        boolean finished = false;
-        while(!finished){
-            ConsoleManager.AnswerOption<Object> abschliessenA = ui.new AnswerOption<>(()-> true, "Abschließen");
+        List<File> fileList = sXML.getXMLFileList();
+        File openedFile = sXML.chooseXML(fileList, "Vertrag");
+        Document doc = sXML.readXMLFile(openedFile);
 
-            ConsoleManager.AnswerOption<Object> vornamenA = ui.new AnswerOption<>(() -> {
-                String name = ui.returnInput(
-                        "Wie lautet der Vorname des Vertragspartners?"
-                );
-                objectToUpdate.setVorname(name);
-                return null;
-            }, "Vorname (aktueller Wert: " + objectToUpdate.getVorname() + ")");
-
-            ConsoleManager.AnswerOption<Object> nachnameA = ui.new AnswerOption<>(()->{
-                String name = ui.returnInput(
-                        "Wie lautet der Nachname des Vertragspartners?"
-                );
-                objectToUpdate.setNachname(name);
-                return null;}, "Nachname (aktueller Wert: "+  objectToUpdate.getNachname() + ")");
-
-            ConsoleManager.AnswerOption<Object> ausweisNrA = null;
-            if(objectToUpdate.getAusweisNr() != null){
-                ausweisNrA = ui.new AnswerOption<>(()-> {
-                    objectToUpdate.setAusweisNr(""); return null;}, "Ausweisnummer (aktueller Wert: "+  objectToUpdate.getAusweisNr() + ")");
-            }
-
-            ConsoleManager.AnswerOption<Object> adresseA = null;
-            if(adresse != null){
-                adresseA = ui.new AnswerOption<>(()-> {
-                    boolean finished2 = false;
-                    while (!finished2){
-                        ConsoleManager.AnswerOption<Object> strasseA = ui.new AnswerOption<>(()-> {
-                            adresse.setStrasse(""); return null;
-                        }, "Straße (aktueller Wert: "+ adresse.getStrasse() + ")");
-                        ConsoleManager.AnswerOption<Object> hausNrA = ui.new AnswerOption<>(()-> {
-                            adresse.setHausNr(""); return null;
-                        }, "Straße (aktueller Wert: "+ adresse.getStrasse() + ")");
-                        ConsoleManager.AnswerOption<Object> plzA = ui.new AnswerOption<>(()-> {
-                            adresse.setPlz(""); return null;
-                        }, "Straße (aktueller Wert: "+ adresse.getStrasse() + ")");
-                        ConsoleManager.AnswerOption<Object> ortA = ui.new AnswerOption<>(()-> {
-                            adresse.setOrt(""); return null;
-                        }, "Straße (aktueller Wert: "+ adresse.getStrasse() + ")");
-
-                        Object result = ui.ConsoleOptions("Welchen Wert der Adresse wollen Sie aktualisieren?", strasseA, hausNrA, plzA, ortA, abschliessenA);
-                        if(result instanceof Boolean){
-                            finished2 = (boolean) result;
-                        }
-                    }
-                    return null;
-                }, "Adresse (aktueller Wert: " + adresse.getStrasse()+" "+ adresse.getHausNr()+" "+ adresse.getPlz()+" "+ adresse.getOrt()+ ")");
-            }
-
-
-            Object result = ui.ConsoleOptions("Welchen Wert wollen Sie von diesem Vertragspartner aktualisieren?", vornamenA, nachnameA, ausweisNrA, adresseA, abschliessenA);
-            if(result instanceof Boolean){
-                finished = (boolean) result;
-            }
-        }
+        Element newPartnerKnoten = sXML.newXMLVertragspartnerknoten(objectToUpdate);
+        doc.getRootElement().addContent(newPartnerKnoten);
+        delete(id);
+        sXML.saveXML(doc,openedFile);
     }
 
+    /**
+     * Entfernt den Knotenpunkt im XML anhand der übergebenen ID
+     * */
     @Override
     public void delete(String id) throws DaoException {
         ServiceXml sXML = ServiceXml.getInstance();
-        Object[] docAndFile = sXML.idSeachAllXml(id);
-        Element partnerKnoten = (Element) docAndFile[0];
-        File file = (File) docAndFile[1];
-        Element root = partnerKnoten.getParentElement();
-
+        var jdFile = sXML.idSearchAllXML("Vertragspartner", id);
+        Element partnerKnoten = jdFile.element;
+        File file = jdFile.file;
+        Element root = partnerKnoten.getDocument().getRootElement();
         root.removeContent(partnerKnoten);
-
         sXML.saveXML(root.getDocument(), file);
     }
 
