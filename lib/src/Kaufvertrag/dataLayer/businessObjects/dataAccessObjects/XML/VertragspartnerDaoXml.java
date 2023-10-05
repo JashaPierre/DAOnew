@@ -14,6 +14,8 @@ import java.util.*;
 
 public class VertragspartnerDaoXml implements IDao<IVertragspartner, String> {
 
+    //Das Vertragspartner Object bräuchte dringend auch ein ID feld.
+    //Hier eingebaut, weil es im Plan keine genauen vorgaben zu dieser Klasse gibt.
     public Map<IVertragspartner, String> idStore = new HashMap<>();
 
     /**
@@ -108,6 +110,7 @@ public class VertragspartnerDaoXml implements IDao<IVertragspartner, String> {
     public void update(IVertragspartner objectToUpdate) throws DaoException {
         ServiceXml sXML = ServiceXml.getInstance();
         ConsoleManager ui = ConsoleManager.getInstance();
+        String id = idStore.get(objectToUpdate);
         ui.updateVertragspartnerUI(objectToUpdate);
 
         List<File> fileList = sXML.getXMLFileList();
@@ -116,6 +119,7 @@ public class VertragspartnerDaoXml implements IDao<IVertragspartner, String> {
 
         Element newPartnerKnoten = sXML.newXMLVertragspartnerknoten(objectToUpdate);
         doc.getRootElement().addContent(newPartnerKnoten);
+        delete(id);
         sXML.saveXML(doc,openedFile);
     }
 
@@ -132,8 +136,6 @@ public class VertragspartnerDaoXml implements IDao<IVertragspartner, String> {
         root.removeContent(partnerKnoten);
         sXML.saveXML(root.getDocument(), file);
     }
-
-
 
     /**
      * Übergibt ein Vertragspartnerknotenelement und baut einen neuen Vertragspartner daraus.

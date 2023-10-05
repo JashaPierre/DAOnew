@@ -2,6 +2,7 @@ package Kaufvertrag;
 
 import Kaufvertrag.businessObjects.IVertragspartner;
 import Kaufvertrag.businessObjects.IWare;
+import Kaufvertrag.dataLayer.businessObjects.Adresse;
 import Kaufvertrag.dataLayer.businessObjects.Vertragspartner;
 import Kaufvertrag.dataLayer.businessObjects.dataAccessObjects.ConsoleManager;
 import Kaufvertrag.dataLayer.businessObjects.dataAccessObjects.DataLayerManager;
@@ -9,7 +10,9 @@ import Kaufvertrag.dataLayer.businessObjects.dataAccessObjects.IDao;
 import Kaufvertrag.dataLayer.businessObjects.dataAccessObjects.IDataLayer;
 import Kaufvertrag.dataLayer.businessObjects.dataAccessObjects.XML.DataLayerXml;
 import Kaufvertrag.dataLayer.businessObjects.dataAccessObjects.XML.VertragspartnerDaoXml;
+import Kaufvertrag.dataLayer.businessObjects.dataAccessObjects.sqlite.ConnectionManager;
 import Kaufvertrag.dataLayer.businessObjects.dataAccessObjects.sqlite.DataLayerSqlite;
+import Kaufvertrag.dataLayer.businessObjects.dataAccessObjects.sqlite.VertragspartnerDaoSqlite;
 import Kaufvertrag.exceptions.DaoException;
 
 import java.util.ArrayList;
@@ -93,6 +96,7 @@ public class Main {
                 }
             }
             ui.closeScanner();
+            ConnectionManager.closeConnection();
         } catch (DaoException e) {
             e.printStackTrace();
         }
@@ -104,6 +108,23 @@ public class Main {
     public static void createNewVertragspartner(IDao<IVertragspartner, String> daoPartner){
         try {
             Vertragspartner partner = (Vertragspartner) daoPartner.create();
+
+            ConsoleManager ui = ConsoleManager.getInstance();
+            ConsoleManager.AnswerOption<Object> jaA = ui.new AnswerOption<>(() -> {
+                partner.setAusweisNr(""); return null;}, "Ja");
+            ConsoleManager.AnswerOption<Object> neinA = ui.new AnswerOption<>(null, "Nein");
+            ui.ConsoleOptions("Möchten Sie dem Vertragspartner eine Ausweisnummer geben?",false, jaA, neinA);
+            jaA = ui.new AnswerOption<>(() -> {
+                partner.setAdresse(new Adresse("null", "null", "null" , "null"));
+                partner.getAdresse().setStrasse("");
+                partner.getAdresse().setHausNr("");
+                partner.getAdresse().setPlz("");
+                partner.getAdresse().setOrt("");
+                return null;
+            }, "Ja");
+            neinA = ui.new AnswerOption<>(null, "Nein");
+            ui.ConsoleOptions("Möchten Sie dem Vertragspartner eine Adresse zuordnen?",false, jaA, neinA);
+
             daoPartner.create(partner);
         } catch (DaoException e) {
             throw new RuntimeException(e);
@@ -127,15 +148,17 @@ public class Main {
             throw new RuntimeException(e);
         }
     }
+
+    // Keinen sinnvollen Nutzen.
     public static void readVertragspartner(IDao<IVertragspartner, String> daoPartner,  IDataLayer dataLayer){
         ConsoleManager ui = ConsoleManager.getInstance();
         //read
-        // macht nicht viel sinn. Was soll denn damit gemacht werden?
         /*ConsoleManager.AnswerOption<Object> readA = ui.new AnswerOption<>(() -> {
             partnerXmlDao.readAll();
             return  null;
         }, "Vorhanden Vertragspartner finden");*/
     }
+
     public static void updateVertragspartner(IDao<IVertragspartner, String> daoPartner, IDataLayer dataLayer){
         try {
             List<IVertragspartner> partnerList = daoPartner.readAll();
@@ -145,10 +168,7 @@ public class Main {
             }
             Object result = makeAnswerList(partnerList, "Welchen Vertragspartner möchten Sie überarbeiten?");
             if(result instanceof IVertragspartner partner) {
-//                daoPartner.delete(getId(dataLayer, "Vertragspartner", partner.getVorname()));
-                String id = getVertragspartnerId(dataLayer,daoPartner,partner);
                 daoPartner.update(partner);
-                daoPartner.delete(id);
             }
         } catch (DaoException e) {
             throw new RuntimeException(e);
@@ -179,6 +199,51 @@ public class Main {
     public static void createWare(IDao<IWare, Long> daoWare){
         try {
             IWare ware = daoWare.create();
+
+            ConsoleManager ui = ConsoleManager.getInstance();
+            ConsoleManager.AnswerOption<Object> jaA = ui.new AnswerOption<>(() ->{
+                String bez = ui.returnInput("Geben Sie eine Beschreibung ein.");
+                ware.setBeschreibung(bez);
+                return null;}, "Ja");
+            ConsoleManager.AnswerOption<Object> neinA = ui.new AnswerOption<>(null, "Nein");
+            ui.ConsoleOptions("Möchten Sie der Ware eine Beschreibung hinzufügen?",false, jaA, neinA);
+
+            //Frage ob Besonderheiten hinzufügt werden sollen
+
+            jaA = ui.new AnswerOption<>(() ->{
+                while(true){
+                    String bes = ui.returnInput("Geben Sie eine Besonderheit an.");
+                    ware.getBesonderheiten().add(bes);
+                    ConsoleManager.AnswerOption<Object> jaA2 = ui.new AnswerOption<>(() -> null ,"ja");
+                    ConsoleManager.AnswerOption<Boolean> neinA2 = ui.new AnswerOption<>(() -> false ,"nein");
+                    Object result = ui.ConsoleOptions("Wollen Sie der Ware eine weiter Besonderheit geben?",false, jaA2, neinA2);
+                    if(result instanceof Boolean && (!(boolean) result)) {
+                        break;
+                    }
+                }
+                return null;
+            }, "Ja");
+            neinA = ui.new AnswerOption<>(null, "Nein");
+            ui.ConsoleOptions("Möchten Sie der Ware Besonderheiten hinzufügen?", jaA, neinA);
+
+            //Frage ob Mängel hinzugefügt werden sollen
+            jaA = ui.new AnswerOption<>(() ->{
+                while(true){
+                    String man = ui.returnInput("Geben Sie einen Mangel an.");
+                    ware.getMaengel().add(man);
+                    ConsoleManager.AnswerOption<Object> jaA2 = ui.new AnswerOption<>(() -> null ,"ja");
+                    ConsoleManager.AnswerOption<Boolean> neinA2 = ui.new AnswerOption<>(() -> false ,"nein");
+                    Object result = ui.ConsoleOptions("Wollen Sie der Ware einen weiteren Mangel hinzufügen?",false, jaA2, neinA2);
+                    if(result instanceof Boolean && (!(boolean) result)) {
+                        break;
+                    }
+                }
+                return null;
+            }, "Ja");
+            neinA = ui.new AnswerOption<>(null, "Nein");
+            ui.ConsoleOptions("Möchten Sie der Ware Mängel hinzufügen?", jaA, neinA);
+
+
             daoWare.create(ware);
         } catch (DaoException e) {
             throw new RuntimeException(e);
@@ -204,6 +269,7 @@ public class Main {
         }
     }
 
+    //Keinen sinnvollen Nutzen
     public static void readWare(IDao<IWare, Long> daoWare){
         ConsoleManager ui = ConsoleManager.getInstance();
 
@@ -245,21 +311,21 @@ public class Main {
         } catch (DaoException e) {
             throw new RuntimeException(e);
         }
-
     }
 
     /**
      * Utility
      * */
 
-    private static String getVertragspartnerId(IDataLayer layer, IDao<IVertragspartner, String> dao, IVertragspartner partner){
+    public static String getVertragspartnerId(IDataLayer layer, IDao<IVertragspartner, String> dao, IVertragspartner partner){
         String id = null;
         if(layer instanceof DataLayerXml){
             var daoXML = (VertragspartnerDaoXml) dao;
             id = daoXML.idStore.get(partner);
         }
         else if (layer instanceof DataLayerSqlite) {
-
+            var daoSqlite = (VertragspartnerDaoSqlite) dao;
+            id = daoSqlite.idStore.get(partner);
         }
         return id;
     }

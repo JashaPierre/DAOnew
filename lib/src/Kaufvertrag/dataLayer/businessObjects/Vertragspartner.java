@@ -13,23 +13,7 @@ public class Vertragspartner implements IVertragspartner {
     public Vertragspartner(String vorname, String nachname) {
         this.vorname = vorname;
         this.nachname = nachname;
-
-        ConsoleManager ui = ConsoleManager.getInstance();
-        ConsoleManager.AnswerOption<Object> jaA = ui.new AnswerOption<>(() -> {
-            setAusweisNr(""); return null;}, "Ja");
-        ConsoleManager.AnswerOption<Object> neinA = ui.new AnswerOption<>(null, "Nein");
-        ui.ConsoleOptions("Möchten Sie dem Vertragspartner eine Ausweisnummer geben?",false, jaA, neinA);
-        jaA = ui.new AnswerOption<>(() -> {
-            setAdresse(new Adresse("null", "null", "null" , "null"));
-            getAdresse().setStrasse("");
-            getAdresse().setHausNr("");
-            getAdresse().setPlz("");
-            getAdresse().setOrt("");
-            return null;
-        }, "Ja");
-        neinA = ui.new AnswerOption<>(null, "Nein");
-        ui.ConsoleOptions("Möchten Sie dem Vertragspartner eine Adresse zuordnen?",false, jaA, neinA);
-    }
+       }
 
     public String getVorname() {
         if(vorname != null && !vorname.isBlank())
